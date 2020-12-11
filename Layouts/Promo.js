@@ -1,44 +1,47 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ImageBackground, Image } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, Image, FlatList } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+
+var bg = require("../img/background.png");
 
 import scanQris from '../assets/scanQris.png';
 import findMerchant from '../assets/findMerchant.png';
 
 export default class Promo extends Component{
+    state = {
+        promoData : []
+    }
+
+    componentDidMount(){
+        this.getPromo()
+    }
+
+    getPromo = async() => {
+        fetch('http://192.168.100.136:3002/promo')
+        .then(response => response.json())
+        .then(res => {
+            this.setState({promoData : res})
+        })
+    }
     render(){
         return(
             <View style={ styles.container }>
                 <ImageBackground style={ styles.styleBackground }>
                     <View style={ styles.containerMenus }>
-
-                        <TouchableOpacity style={ styles.containerPromo1 }>
-                            <View style={ styles.containerPromos }>
-                                <View style={ styles.containerTextPromo }>
-                                    <Text style={ styles.styleTextPromo }>Diskon Rp 10.000</Text>
-                                    <Text style={ styles.styleTextExpired }>Expired {":"} 31 October 2020</Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={ styles.containerPromo2 }>
-                            <View style={ styles.containerPromos }>
-                                <View style={ styles.containerTextPromo }>
-                                    <Text style={ styles.styleTextPromo }>Diskon Rp 15.000</Text>
-                                    <Text style={ styles.styleTextExpired }>Expired {":"} 31 October 2020</Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-
-                        <TouchableOpacity style={ styles.containerPromo3 }>
-                            <View style={ styles.containerPromos }>
-                                <View style={ styles.containerTextPromo }>
-                                    <Text style={ styles.styleTextPromo }>Cashback Rp 15.000</Text>
-                                    <Text style={ styles.styleTextExpired }>Expired {":"} 31 October 2020</Text>
-                                </View>
-                            </View>
-                        </TouchableOpacity>
-
+                        <FlatList data={this.state.promoData}
+                            keyExtractor={(x, i) => i.toString()}
+                            renderItem={({item}) =>
+                                <TouchableOpacity style={ styles.containerPromo}>
+                                    <View style={ styles.containerPromos }>
+                                        <View style={ styles.containerTextPromo }>
+                                            <Text style={ styles.styleTextPromo }>{`${item.promo_name}`}</Text>
+                                            <Text style={ styles.styleTextPromo }>Discount : {`${item.promo_discount}`}%</Text>
+                                            <Text style={ styles.styleTextExpired }>Expired {":"} {`${item.promo_expiredDate}`}</Text>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            }
+                        />
                     </View>
                 </ImageBackground>
             </View>
@@ -59,23 +62,9 @@ const styles = StyleSheet.create({
         margin: 20
     },
 
-    containerPromo1: {
+    containerPromo: {
         backgroundColor: '#4287f5',
         marginTop: 10,
-        borderRadius: 10,
-        borderColor: '#fff',
-        borderWidth: 1,
-    },
-    containerPromo2: {
-        backgroundColor: '#4287f5',
-        marginTop: 24,
-        borderRadius: 10,
-        borderColor: '#fff',
-        borderWidth: 1,
-    },
-    containerPromo3: {
-        backgroundColor: '#4287f5',
-        marginTop: 24,
         borderRadius: 10,
         borderColor: '#fff',
         borderWidth: 1,
@@ -83,11 +72,12 @@ const styles = StyleSheet.create({
 
     containerPromos: {
         width: '100%',
-        height: 84,
+        height: 150,
         backgroundColor: '#fff',
         borderColor: 'black',
         borderWidth: 1,
         borderRadius: 10,
+        justifyContent:'center',
     },
 
     containerTextPromo: {        
@@ -97,7 +87,6 @@ const styles = StyleSheet.create({
         textAlign: 'left',
         fontSize: 24,
         marginStart: 20,
-        marginTop: 10,
         fontWeight: '500'
     },
     styleTextExpired: {

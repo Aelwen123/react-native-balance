@@ -1,7 +1,7 @@
 import { StatusBar } from 'expo-status-bar';
 import { Content, Header } from 'native-base';
 import React, { Component } from 'react';
-import { StyleSheet, Text, View, SafeAreaView, Image, TouchableWithoutFeedback, Button, ImageBackground, TouchableOpacity } from 'react-native';
+import { FlatList, StyleSheet, Text, View, SafeAreaView, Image, TouchableWithoutFeedback, Button, ImageBackground, TouchableOpacity, AsyncStorage } from 'react-native';
 import { TouchableRipple } from 'react-native-paper';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -17,14 +17,7 @@ import MyImage2 from '../assets/alfa_card.png';
 import { Avatar } from 'react-native-paper';
 import Footers from './Footers';
 
-import {ScrollView, FlatList} from 'react-native-gesture-handler';
-
-// import Icon from 'react-native-vector-icons/Ionicons';
-
-// import { createAppContainer } from 'react-navigation';
-// import { createMaterialBottomTabNavigator } from 'react-navigation-material-bottom-tabs';
-
-// import MenuHome from './Components/MenuHome';
+import {ScrollView} from 'react-native-gesture-handler';
 
 var bg = require("../img/background.png");
 var lg = require("../img/Logo_Balance.png");
@@ -39,16 +32,66 @@ class Home extends Component{
   constructor(props){
     super(props);
     this.state = {
-      name: 'LI',
-      balance : '600.000',
-      user_name : 'Aelwen',
-      user_email : 'loremipsum@gmail.com',
-      phonenumber: '081234567890',
+      name: '',
+      user_name : '',
+      user_email : '',
+      phonenumber: '',
+      mycard : [],
       my_acccount: [
         {MyImage1},
         {MyImage2},
       ]
     };
+  }
+
+  componentDidMount(){
+    this.updateCardData();
+    this.getUserData();
+    this.getCardData();
+  }
+
+  getUserData = () => {
+    AsyncStorage.getItem('phonenumber', (err, result) => {
+      fetch("http://192.168.100.136:3002/customer/getCustomer/" + result)
+      .then(response => response.json())
+      .then(res => {
+        this.setState({user_name : res.user_name})
+        this.setState({user_email : res.user_email})
+        this.setState({phonenumber: res.user_phonenumber})
+      })
+    })
+  }
+
+  updateCardData = () => {
+    AsyncStorage.getItem('phonenumber', (err, result) => {
+      fetch("http://192.168.100.136:3002/mycard/getCustomerCard/" + result)
+      .then(response => response.json())
+      .then(res => {
+        var count = Object.keys(res).length;
+        for(var i =0; i<=count; i++){
+          if(res[i].mycard_name === "clover"){
+            fetch("http://192.168.100.136:3002/mycard/update/bank/clover/" + res[i].mycard_number)
+          }
+          else if (res[i].mycard_name === "gajek"){
+            fetch("http://192.168.100.136:3002/mycard/update/digitalpayment/gajek/" + res[i].mycard_number)
+          }
+        }
+      }).catch(err => {
+        console.log(err)
+      })
+    })
+  }
+
+  getCardData = () => {
+    AsyncStorage.getItem('phonenumber', (err, result) => {
+      fetch("http://192.168.100.136:3002/mycard/getCustomerCard/" + result)
+      .then(response => response.json())
+      .then(res => {
+        this.setState({mycard: res})
+      }).catch(err => {
+        console.log(err)
+      })
+    })
   }
 
   render(){
@@ -67,9 +110,6 @@ class Home extends Component{
                 </View>
                 <View style={{ marginTop: 10, marginLeft: 25, flexDirection: 'row' }}>
                     <Avatar.Image source={ProfilePicture} size={44} style={{backgroundColor:'white'}}/>
-                    {/* <View style={ styles.circle }>
-                      <Text style={ styles.circleText }>{ this.state.name }</Text>
-                    </View> */}
                     <View>
                       <Text style={{color:'white', fontSize:20, fontWeight:'bold', marginStart: 18, flexDirection: 'column'}}>{this.state.user_name}</Text>
                       <Text style={{color:'white', marginStart: 18 }}>{this.state.user_email}</Text>
@@ -79,48 +119,27 @@ class Home extends Component{
                 <View style={ styles.main }>
                   <Text style={{color:'white', fontSize:16, fontWeight:'200', marginStart: 10, marginTop: 20}}>My cards</Text>
                   <View style={{ paddingBottom: 2 }}>
-                      <ScrollView
-                        horizontal={true}
-                        scrollEnabled={true}
-                        showsHorizontalScrollIndicator={true}
-                        scrollEventThrottle={14}
-                        snapToAlignment='center'
-                        style={{overflow:'visible', paddingTop:10, height:219}}>
-
-                        <TouchableOpacity activeOpacity={0.95} style={{backgroundColor:'#ffffff0', borderRadius:20, marginStart: 8, }}>
-                            <View style={styles.card}>
-                                <View style={styles.cardImage}>
-                                    <Image source={MyImage1} style={{ marginTop: 4, width: '86%', height: '78%', resizeMode: 'stretch' }}/>
-                                    <View style={{position:'absolute', paddingTop:10, paddingLeft: 10}}>
-                                        <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:16, textAlign: 'left', alignContent: 'center', marginStart: 20, marginTop: 60, letterSpacing: 1.2 }}>{this.state.phonenumber}</Text>
-                                        <View style={{ flexDirection: 'row', }}>
-                                            <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:18, textAlign: 'left', alignContent: 'center', marginStart: 20, marginTop: 20, }}>IDR </Text>
-                                            <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:30, textAlign: 'left', alignContent: 'center', marginStart: 5, marginTop: 16, letterSpacing: 1}}>{this.state.balance}</Text>
-                                        </View>
-                                    </View>
+                  <FlatList data={this.state.mycard}
+                    horizontal={true}
+                    keyExtractor={(y, i) => i.toString()}
+                    style={{height:210}}
+                    renderItem={({item}) =>
+                      <TouchableOpacity activeOpacity={0.95} style={{backgroundColor:'#ffffff0', borderRadius:20, marginStart: 8, }} onPress={() => console.log("HAHAHA")}>
+                        <View style={styles.card}>
+                          <View style={styles.cardImage}>
+                            <Image source={`${item.mycard_type}` == "digitalpayment" ? MyImage1 : MyImage2} style={{ marginTop: 4, width: '86%', height: '78%', resizeMode: 'stretch' }}/>
+                              <View style={{position:'absolute', paddingTop:10}}>
+                                <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:16, textAlign: 'left', alignContent: 'center', marginStart: 30, marginTop: 60, letterSpacing: 1.2 }}>{`${item.mycard_name}`.toUpperCase()}</Text>
+                                  <View style={{ flexDirection: 'row'}}>
+                                    <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:18, textAlign: 'left', alignContent: 'center', marginStart: 30, marginTop: 20, }}>IDR </Text>
+                                    <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:30, textAlign: 'left', alignContent: 'center', marginStart: 5, marginTop: 16, letterSpacing: 1}}>{`${item.mycard_balance}`}</Text>
+                                  </View>
                                 </View>
-                            </View>
-                        </TouchableOpacity>
-
-                        <View style={styles.card1}>
-                            <View style={styles.cardImage1}>
-                                <Image source={MyImage2} style={{ marginTop: 4, width: '86%', height: '78%', resizeMode: 'stretch' }}/>
-                                <View style={{position:'absolute', paddingTop:10, paddingLeft: 10}}>
-                                    <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:16, textAlign: 'left', alignContent: 'center', marginStart: 20, marginTop: 60, letterSpacing: 1.2 }}>{this.state.phonenumber}</Text>
-                                    <View style={{ flexDirection: 'row', }}>
-                                        <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:18, textAlign: 'left', alignContent: 'center', marginStart: 20, marginTop: 20, }}>IDR </Text>
-                                        <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:30, textAlign: 'left', alignContent: 'center', marginStart: 5, marginTop: 16, letterSpacing: 1}}>{this.state.balance}</Text>
-                                    </View>
-                                </View>
-                            </View>
-                        </View>
-                      </ScrollView>
-                      <View style={ styles.containerSmallCircle }>
-                        <View style={ styles.smallCircle } />
-                        <View style={ styles.smallCircle1 } />
-                      </View>
-
-                      {/* <Slider */}
+                              </View>
+                          </View>
+                      </TouchableOpacity>
+                    }
+                  />
 
                       <Text style={{color:'white', fontSize:16, fontWeight:'200', marginStart: 10, marginTop: 14}}>Promo {"&"} Cashback</Text>
                       <TouchableOpacity activeOpacity={0.85} onPress={() => this.props.navigation.navigate('PromoScreen')}>
@@ -133,12 +152,6 @@ class Home extends Component{
                   </View>
                 </View>
               </Content>
-
-              {/* <Content>
-                <View style={ styles.main }>
-                  <Text style={{color:'black', fontSize:20, fontWeight:'bold'}}>My cards</Text>
-                </View>
-              </Content> */}
 
               <Footers />
           </ImageBackground>
@@ -201,19 +214,17 @@ const styles = StyleSheet.create({
     marginTop: 12
   },
   cardImage:{
-    width:380, 
+    width:400, 
     height:260, 
     borderRadius:20,
     padding: 10
   },
-  card:{
-    marginRight:10, 
+  card:{ 
     marginTop: 120,
     justifyContent: 'center',
-    alignItems:'center',
     shadowColor: 'black',
     borderColor:'black',
-    borderRadius:20,    
+    borderRadius:20,
     shadowOffset: {
       width: 0,
       height: 2,
@@ -233,7 +244,6 @@ const styles = StyleSheet.create({
     marginStart: 90
   },
   card1:{
-    marginRight:5, 
     marginTop: 120,
     justifyContent: 'center',
     alignItems:'center',

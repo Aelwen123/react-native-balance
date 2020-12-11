@@ -10,20 +10,85 @@ import { TouchableRipple } from 'react-native-paper';
 
 import { useNavigation } from '@react-navigation/native';
 
-// let merchant_balance = 0
-// let user_balance = 0
-
 export default class Security extends Component{
     state = {
-        securitypin: '',
+        securitypin: '', currentDate: ''
     }
     onChangeText = (key, val) => {
         this.setState({ [key]: val })
     }
 
     componentDidMount(){
-        user_balance = this.props.user_balance
-        merchant_balance = this.props.merchant_balance
+        console.log(this.props)
+        this.currentDate()
+    }
+
+    currentDate = () => {
+        var date = new Date().getDate();
+        var month = new Date().getMonth() + 1;
+        var year = new Date().getFullYear();
+
+        this.setState({currentDate : date + '/' + month + '/' + year}, () => console.log(this.state.currentDate))
+    }
+
+    pay = () => {
+        if(this.props.route.params.mycard_type == "digitalpayment"){
+            fetch('http://192.168.100.136:3002/payment/payToMerchant', {
+                method: 'POST',
+                headers: {
+                    'Accept' : 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_phonenumber : this.props.route.params.mycard_number,
+                    digitalpayment_securitypin : this.state.securitypin,
+                    merchant_id : this.props.route.params.merchant_id_gajek,
+                    payment_method : this.props.route.params.mycard_name,
+                    amountBeforePromo : this.props.route.params.nominal,
+                    amountAfterPromo: this.props.route.params.nominal,
+                    payment_date: this.state.currentDate,
+                    payment_status: true,
+                    payment_promo : "No promo"
+                })
+            }).then(response => response.json())
+            .then(res => {
+                if(res.status == 200){
+                    console.log(res)
+                    this.props.navigation.push('TheHome')
+                }
+                else{
+                    console.log("Payment failed!")
+                }
+            })
+        } else {
+            fetch('http://192.168.100.136:3002/payment/payToBankAccount', {
+                method: 'POST',
+                headers: {
+                    'Accept' : 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    senderAccountNumber : this.props.route.params.mycard_number,
+                    debitcardpin : this.state.securitypin,
+                    receiverAccountNumber : this.props.route.params.merchant_clover_account,
+                    payment_method : this.props.route.params.mycard_name,
+                    amountBeforePromo : this.props.route.params.nominal,
+                    amountAfterPromo: this.props.route.params.nominal,
+                    payment_date: this.state.currentDate,
+                    payment_status: true,
+                    payment_promo : "No promo"
+                })
+            }).then(response => response.json())
+            .then(res => {
+                if(res.status == 200){
+                    console.log(res)
+                    this.props.navigation.push('TheHome')
+                }
+                else{
+                    console.log("Payment failed!")
+                }
+            })
+        }
     }
 
     onClear = () => {
@@ -34,7 +99,7 @@ export default class Security extends Component{
 
     render(){
         const { securitypin } = this.state;
-        const enabled = securitypin.length > 0;
+        const enabled = securitypin.length >= 4 && !isNaN(securitypin);
 
         const { handleSubmit, reset } = this.props;   
                 
@@ -48,21 +113,25 @@ export default class Security extends Component{
                     <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                         <View style={styles.input}>
                             <Icon name='account-circle' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
-                            <TextInput keyboardType="number-pad" placeholder="Security Pin" onChangeText={val => this.onChangeText('securitypin', val)}>
-                                <Text style={{color: "black"}}>{this.state.securitypin}</Text>
+                            <TextInput keyboardType="number-pad" secureTextEntry={true} placeholder="Security Pin" style={{ alignItems: 'center', justifyContent: 'center' }} onChangeText={val => this.onChangeText('securitypin', val)}>
+                                <Text style={{color: "black", alignItems: 'center', textAlign: 'center', justifyContent: 'center' }}>{this.state.securitypin}</Text>
                             </TextInput>
                         </View>
                     </View>
-
+                    <View style={{ position: 'relative', top: 40, marginStart: 24, }}>
+                        <Text style={{ fontSize: 12, textAlign: 'right', marginEnd: 26, }}>*Must be a Number!</Text>
+                    </View>
                     <View style={{ justifyContent: 'flex-end', flex: 1, marginBottom: 54, marginEnd: 0 }}>
                         <View style={{ alignItems:'center', marginTop: 20, }}>
                             {/* <CustomButtonBorder title='Pay' colors={['#90dae1', '#4287f5']} onPress={() => null}/> */}
                             <TouchableOpacity 
-                                name={ this.state.btnPay } disabled={ !enabled }
+                                name={ this.state.btnPay } 
+                                disabled={ !enabled }
+                                onPress={this.pay.bind(this)}
                                 style={[
                                     styles.containerButtonPay,
                                     { 
-                                        backgroundColor: securitypin ? '#4263D5' : '#4263D530', 
+                                        backgroundColor: enabled ? '#4263D5' : '#4263D530', 
                                     }
                                     ]}>
                                 <Text
@@ -88,13 +157,14 @@ export default class Security extends Component{
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
+        backgroundColor: '#ffffff',
+        flex: 1,
     },
 
     styleTextPIN: {
         justifyContent: 'center',
         alignItems: 'center',
-        marginTop: 30
+        marginTop: 100
     },
 
     textPin: {
@@ -110,7 +180,7 @@ const styles = StyleSheet.create({
         flex: 1,
         position:'absolute',
         flexDirection: 'row',
-        width: 350,
+        width: 310,
         height: 55,
         backgroundColor: 'white',
         margin: 10,
@@ -136,7 +206,7 @@ const styles = StyleSheet.create({
     },
 
     containerButtonPay: {
-        width: 344,
+        width: 310,
         height: 40,
         borderRadius: 20,
         justifyContent: 'center',

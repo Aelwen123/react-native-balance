@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from 'react';
-import { View, PixelRatio, Text, StyleSheet, ImageBackground, StatusBar, Image, TextInput, Button, KeyboardAvoidingView } from 'react-native';
+import { View, PixelRatio, Text, StyleSheet, ImageBackground, StatusBar, Image, TextInput, Button, KeyboardAvoidingView, AsyncStorage } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { TouchableRipple } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -18,6 +18,42 @@ export default class SignIn extends React.Component{
         onChangeText = (key, val) => {
             this.setState({ [key]: val })
         }
+
+        signIn = () => {
+            const { phonenumber, securitypin } = this.state
+            fetch('http://192.168.100.136:3002/customer/signin', {
+                method: 'POST',
+                headers: {
+                    'Accept' : 'application/json',
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    user_phonenumber : phonenumber,
+                    user_pin : securitypin
+                })
+            })
+            .then(response => response.json())
+            .then(res => {
+                if(res.status != 200){
+                    console.log(res)
+                }
+                else{
+                    console.log(res)
+                    AsyncStorage.setItem('token', res.token)
+                    AsyncStorage.setItem('phonenumber', res.user_phonenumber)
+                    AsyncStorage.getItem('token', (err, result) => {
+                        this.props.navigation.navigate('TheHome', {
+                            token : result,
+                            user_phonenumber : res.user_phonenumber
+                        })
+                    })
+                }
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        }
+
         
         render(){            
             const { phonenumber, securitypin } = this.state;
@@ -74,7 +110,7 @@ export default class SignIn extends React.Component{
                                                 backgroundColor: enabled ? '#4263D5' : '#4263D510'
                                             }
                                         ]}
-                                    onPress={() => null}>
+                                    onPress={this.signIn.bind(this)}>
                                     <Text style={ styles.styleTextSignIn }>Sign In</Text>
                                 </TouchableOpacity>
                             </View>
@@ -85,30 +121,10 @@ export default class SignIn extends React.Component{
                             <TouchableOpacity
                                 style={{ paddingTop: 0, paddingStart: 10, }}
                                 onPress={() => this.props.navigation.navigate("SignUp")} >
-                                <Text style={{ color: '#4287f5', fontSize: 14, fontWeight: 'bold', }}>Sign Up</Text>
+                                <Text style={{ color: '#4287f5', fontSize: 14, fontWeight: 'bold'}}>Sign Up</Text>
                             </TouchableOpacity>
                         </View>
                     </ImageBackground>
-    
-    
-                    {/* <View style={ styles.bottom }>
-                        <TouchableRipple style={{ alignItems: 'center', marginBottom: 15 }}
-                            onPress = {() => proses() } >
-                                <Text style={ styles.containerSignUp }>test</Text>
-                        </TouchableRipple>
-
-                        <View style={{ display: 'flex', height: 80, 
-                            backgroundColor: '#ffffff', flexDirection: 'column',
-                            justifyContent: 'center', alignItems: 'center' }}>
-                            <TouchableRipple 
-                                style={{ backgroundColor: '#2166b0', width: 200, height: 50,
-                                justifyContent: 'center', alignItems: 'center' }}
-                                onPress = {() => this.props.navigation.navigate("SignUp")}>
-                                <Text style={{ color: 'white', textAlign: 'center' }}>Sign Up</Text>
-                            </TouchableRipple>
-                        </View>
-                    </View> */}
-                    
                 </View>
             );
         }

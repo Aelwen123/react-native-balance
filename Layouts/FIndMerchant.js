@@ -1,53 +1,92 @@
 import React, { Component, useState } from 'react';
-import { View, Text, Image, TextInput, StyleSheet } from 'react-native';
+import { View, Text, Image, TextInput, StyleSheet, FlatList, ImageBackground } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
-import { TouchableOpacity } from 'react-native-gesture-handler';
+import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
+import { Card, Button, Title, Paragraph } from 'react-native-paper'
+import { Content } from 'native-base';
+var bg = require("../img/background.png");
 
 // import { useNavigation } from '@react-navigation/native';
 
 export default class FindMerchant extends Component{
     state = {
-        merchantName: '',
+        merchantName: '', merchantData: [], viewMerchantData : false, errormessage :''
     }
     onChangeText = (key, val) => {
         this.setState({ [key]: val })
     }
     onClear = () => {
         this.setState({
-            merchantName: ''
+            merchantName: '',
+            merchantData: []
         })
     }
+
+    onSearch = async() => {
+        const { merchantName } = this.state
+        fetch('http://192.168.100.136:3002/merchant/getMerchant/name/' + merchantName)
+        .then(response => response.json())
+        .then(res => {
+            if(res.status == 401){
+                this.setState({errormessage : "Merchant not found!"})
+            } else {
+                this.setState({merchantData : res})
+                this.setState({viewMerchantData: true})
+                this.setState({errormessage : ''})
+            }
+        }).catch(err => {
+            console.log(err)
+        })
+    }
+
     render(){
         const { merchantName } = this.state;
         const enabled = merchantName.length > 2 && merchantName.length < 20;
 
         return(
             <View style={styles.container}>
-                <View>
-                    <Text style={ styles.containerJudul }>
-                        Carilah merchant dan Lakukan transaksi  {'\n'}
-                        pembayaran secara offsite dengan QRIS di merchant yang tersedia
-                    </Text>
-                </View>
+                <ImageBackground source={bg} style={ styles.imgb }>
+                    <View style={styles.main}>
+                    <View style={{marginLeft:15}}>
+                        <Text style={ styles.containerJudul }>
+                            Carilah merchant dan Lakukan transaksi  {'\n'}
+                            pembayaran secara offsite dengan QRIS di merchant yang tersedia
+                        </Text>
+                    </View>
 
                 <View style={styles.form}>
-
                     <View style={styles.input}>
                         <Icon name='home' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
                             <TextInput style={styles.textinput} mode='outlined' placeholder="Merchant Name" onChangeText={val => this.onChangeText('merchantName', val)}>
                                 <Text>{this.state.merchantName}</Text>
                             </TextInput>
                     </View>
+
+                    <View style={{height: this.state.errormessage === '' ? 0 : 50}}>
+                        <Text style={{color: 'red'}}>{this.state.errormessage}</Text>
+                    </View>
+                    <FlatList data={this.state.merchantData}
+                        style={{maxHeight: this.state.viewMerchantData === true ? 400 : 0, width: 340}}
+                        keyExtractor={(x, i) => i.toString()}
+                        renderItem={({item}) =>
+                            <TouchableOpacity style={styles.viewMerchant} onPress = {() => this.props.navigation.navigate('SelectMerchantLocationScreen', {merchant_name : `${item.merchant_name}`})}>
+                                <Text style={{fontSize: 20, textTransform: 'uppercase', fontWeight:'bold'}}>{`${item.merchant_name}`}</Text>
+                                <Text>{`${item.merchant_type}`}</Text>
+                                <Text>{`${item.merchant_location}`}</Text>
+                                <Text>Check out {`${item.merchant_name}`} other branch</Text>
+                            </TouchableOpacity>
+                        }
+                    />
                     
-                    <View style={{alignItems:'center', marginTop: '174%'}}>
+                    <View style={{alignItems:'center'}}>
                         <TouchableOpacity
                             disabled={ !enabled }
-                            onPress={() => null}
-                            // this.props.navigation.navigate('SignIn')
+                            onPress={this.onSearch.bind(this)}
                             style={[
                                 styles.containerBtnSearch,
                                 { 
-                                    backgroundColor: enabled ? '#4263D5' : '#4263D530'
+                                    backgroundColor: enabled ? '#4263D5' : '#4263D530',
+                                    marginTop:10
                                 }
                                 ]}>
                             <Text style={{ textAlign: 'center', fontSize: 20, lineHeight: 43, color: '#ffffff', fontSize: 18 }}>SEARCH</Text>
@@ -60,7 +99,9 @@ export default class FindMerchant extends Component{
                             <Text style={ styles.styleTextClear }>Clear</Text>
                         </TouchableOpacity>
                     </View>
-                </View>
+                    </View>
+                    </View>
+                </ImageBackground>
             </View>
         );
     }
@@ -69,10 +110,30 @@ export default class FindMerchant extends Component{
 const styles = StyleSheet.create({
     container:{
       flex:1,
-      alignItems:'center',
-      justifyContent:'center',
-      paddingStart: 24,
-      backgroundColor: '#ffffff'
+  },
+  imgb : {
+      position:'absolute',
+      height: '100%',
+      width: '100%',
+  },
+
+  viewMerchant : {
+      width: 310,
+      height: 120,
+      backgroundColor: '#40a8c4',
+      padding: 20,
+      alignContent:'center',
+      color: '#90dae1',
+      borderRadius: 20,
+      fontSize: 18,
+      fontWeight: '500',
+      shadowColor:'black',
+      shadowOffset:{width: 0, height: 2},
+      shadowOpacity: 0.25,
+      shadowRadius: 3.84,
+      elevation: 5,
+      alignSelf:'center',
+      margin: 10,
   },
   
   containerJudul: {
@@ -143,4 +204,7 @@ const styles = StyleSheet.create({
         borderRadius: 20,
         justifyContent: 'center',
     },
+    main:{
+        alignItems:'center'
+      },
   });

@@ -9,6 +9,7 @@ import { useNavigation } from '@react-navigation/native';
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
   const [scanned, setScanned] = useState(false);
+  const [merchant_id, setMerchant_id] = useState('');
   const navigation = useNavigation();
 
   useEffect(() => {
@@ -20,7 +21,23 @@ export default function App() {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    alert(`Bar code with type ${type} and data ${data} has been scanned!`);
+    fetch('http://192.168.100.136:3002/merchant/getMerchant/gajek/' + `${data}`)
+    .then(response => response.json())
+    .then(res => {
+      if(res.status == 401){
+        alert(`Not found!`)
+      } else {
+        navigation.navigate('InputNominalScreen', {
+          merchant_name: res.merchant_name,
+          merchant_location : res.merchant_location,
+          merchant_address : 'qrlorum ipsumGrand Indonesia East Mall Lantai 3A, Jalan M.H. Thamrin No.28-30, Gondangdia, Menteng, RT.1/RW.5, RT.1/RW.5, Menteng, Kec. Menteng, Kota Jakarta Pusat, Daerah Khusus Ibukota Jakarta 10350',
+          merchant_workhour_start : res.merchant_workhour_start,
+          merchant_workhour_finish : res.merchant_workhour_finish,
+          merchant_id_gajek : res.merchant_id_gajek,
+          merchant_clover_account : res.merchant_clover_account
+        })
+      }
+    })
   };
 
   if (hasPermission === null) {

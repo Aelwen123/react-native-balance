@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, ImageBackground, StyleSheet, Icon, Image } from 'react-native';
+import { View, Text, ImageBackground, StyleSheet, Icon, Image, AsyncStorage } from 'react-native';
 import { Button, Content, Header } from 'native-base';
 import { Avatar, TouchableRipple } from 'react-native-paper';
 
@@ -24,13 +24,42 @@ export default class Profile extends Component{
     constructor(props){
         super(props);
         this.state = {
-          name: 'LI',
-          balance : '600.000',
-          user_name : 'Aelwen',
-          user_email : 'loremipsum@gmail.com',
-          phonenumber : '081234567890',
-          total_accounts : '2',
+          name: '',
+          balance : '',
+          user_name : '',
+          user_email : '',
+          phonenumber : '',
+          total_accounts : '',
         }
+    }
+
+    componentDidMount() {
+        this.getUserData()
+        this.getCardData()
+    }
+
+    getUserData = () => {
+        AsyncStorage.getItem('phonenumber', (err, result) => {
+            fetch("http://192.168.100.136:3002/customer/getCustomer/" + result)
+            .then(response => response.json())
+            .then(res => {
+                this.setState({user_name : res.user_name})
+                this.setState({user_email : res.user_email})
+                this.setState({phonenumber: res.user_phonenumber})
+            })
+        })
+    }
+
+    getCardData = () => {
+        AsyncStorage.getItem('phonenumber', (err, result) => {
+            fetch("http://192.168.100.136:3002/mycard/getCustomerCard/" + result)
+            .then(response => response.json())
+            .then(res => {
+                this.setState({total_accounts: res.length})
+            }).catch(err => {
+                console.log(err)
+            })
+        })
     }
 
     render(){
@@ -58,10 +87,15 @@ export default class Profile extends Component{
                     </View>
 
                     <View style={ styles.containerAccount }>
-                        <TouchableOpacity style={ styles.styleButtonEditProfile }>
+                    <TouchableOpacity style={ styles.styleButtonEditProfile }
+                            onPress={() => this.props.navigation.navigate('EditProfileScreen', {
+                                user_name : this.state.user_name,
+                                user_email : this.state.user_email,
+                                phonenumber: this.state.phonenumber,
+                            })}>
                             <Image source={icon_edit_profile} style={ styles.styleImageEditProfile }/>
                             <Text style={ styles.styleTextEditProfile }>Edit Profile</Text>
-                            <Image source={arrow} style={{ marginTop: 14, marginStart: '57%', width: 14, height: 14, marginEnd: 30, resizeMode: 'contain' }}/>
+                            <Image source={arrow} style={{ marginTop: 14, marginEnd: 20, width: 14, height: 14, marginEnd: 30, resizeMode: 'contain' }}/>
                         </TouchableOpacity>
                     </View>
                 </View>         
@@ -78,10 +112,11 @@ export default class Profile extends Component{
                             <Image source={arrow} style={{ marginTop: 14, marginStart: '68%', width: 14, height: 14, marginEnd: 30, resizeMode: 'contain' }}/>
                         </TouchableOpacity>
 
-                        <TouchableOpacity style={{ backgroundColor: '#ffffff', height: 50, flexDirection: 'row' }}>
-                            <Image source={icon_cs} style={{ marginTop: 18, marginStart: 20, width: 22, height: 22, marginEnd: 20, resizeMode: 'contain' }}/>
-                            <Text style={{ lineHeight: 54, fontSize: 16}}>Customer Service</Text>
-                            <Image source={arrow} style={{ marginTop: 14, marginStart: '45%', width: 14, height: 14, marginEnd: 30, resizeMode: 'contain' }}/>
+                        <TouchableOpacity style={{ backgroundColor: '#ffffff', height: 50, flexDirection: 'row' }}
+                            onPress={() => this.props.navigation.navigate('CustomerServiceScreen')}>
+                            <Image source={icon_cs} style={{ marginTop: 18, marginStart: 21, width: 20, height: 20, marginEnd: 20, resizeMode: 'contain' }}/>
+                            <Text style={{ lineHeight: 54, fontSize: 16, marginEnd: '40%'}}>Customer Service</Text>
+                            <Image source={arrow} style={{ marginTop: 14, marginEnd: 19, width: 14, height: 14, marginEnd: 30, resizeMode: 'contain' }}/>
                         </TouchableOpacity>
                     </View>
                 </View>         

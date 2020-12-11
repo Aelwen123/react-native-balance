@@ -16,6 +16,10 @@ import Promo from './Layouts/Promo';
 import Notification from './Layouts/Notification';
 import ScanQR from './Layouts/ScanQR';
 import FindMerchant from './Layouts/FIndMerchant';
+import SelectMerchantLocation from './Layouts/SelectMerchantLocation'
+import InputNominal from './Layouts/InputNominal';
+import EditProfile from './Layouts/EditProfile';
+import CustomerService from './Layouts/CustomerService';
   
   const Stack = createStackNavigator();
   
@@ -23,24 +27,21 @@ import FindMerchant from './Layouts/FIndMerchant';
     return(
       <NavigationContainer>
         <Stack.Navigator initialRouteName="MySignUp">
-          {/* <Stack.Screen name="TheSplash" 
+          <Stack.Screen name="TheSplash" 
                         component={Splash}
-                        options={{ headerShown: false }}/> */}
-          {/* <Stack.Screen name="Intro"
+                        options={{ headerShown: false }}/>
+          <Stack.Screen name="Intro"
                         component={Intro}
-                        options={{ headerShown: false }}/> */}
-          {/* <Stack.Screen name="SignIn"
+                        options={{ headerShown: false }}/>
+          <Stack.Screen name="SignIn"
                         component={SignIn}
                         options={{ headerShown: false }}/>
           <Stack.Screen name="SignUp"
                         component={SignUp}
-                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Sign Up' }} />             */}
-          {/* <Stack.Screen name="VerifikasiOTP"
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Sign Up' }} />            
+          <Stack.Screen name="VerifikasiOTP"
                         component={VerifikasiOTP}
-                        options={{ title: "Verifikasi OTP" }}/> */}
-          {/* <Stack.Screen name="SecurityPIN"
-                        component={SecurityPage}
-                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Security PIN' }}/> */}
+                        options={{ title: "Verifikasi OTP" }}/>
           <Stack.Screen name="TheHome"
                         component={Home}
                         options={{ headerShown: false }}/>
@@ -62,6 +63,21 @@ import FindMerchant from './Layouts/FIndMerchant';
           <Stack.Screen name="FindMerchantScreen"
                         component={FindMerchant}
                         options={{ headerShown: true, headerTitleAlign: 'center', title: 'Find Merchant' }}/>
+          <Stack.Screen name="SelectMerchantLocationScreen"
+                        component={SelectMerchantLocation}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Merchant Location' }}/>
+          <Stack.Screen name="InputNominalScreen"
+                        component={InputNominal}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Find Merchant', headerTransparent: true }}/>
+          <Stack.Screen name="SecurityPINScreen"
+                        component={SecurityPage}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Security PIN', headerTransparent: true }}/>
+          <Stack.Screen name="EditProfileScreen"
+                        component={EditProfile}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Edit Profile', headerTransparent: false }}/>                        
+          <Stack.Screen name="CustomerServiceScreen"
+                        component={CustomerService}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Customer Service', headerTransparent: false }}/>
         </Stack.Navigator>
       </NavigationContainer>
     );
