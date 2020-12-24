@@ -7,15 +7,16 @@ var bg = require("../img/background.png");
 import scanQris from '../assets/scanQris.png';
 import findMerchant from '../assets/findMerchant.png';
 
-export default class Promo extends Component{
+export default class CustomerPromo extends Component{
     state = {
         promoData : [],
-        paidPromoData : []
+        paidPromoData : [],
+        promo_discount: 0
     }
 
     componentDidMount(){
         this.getPromo()
-        this.getPaidPromo()
+        this.getCustomerPromo()
     }
 
     getPromo = async() => {
@@ -26,12 +27,19 @@ export default class Promo extends Component{
         })
     }
 
-    getPaidPromo = async() => {
-        fetch('http://192.168.100.136:3002/promo/paid')
+    getCustomerPromo = async() => {
+        fetch('http://192.168.100.136:3002/promo/customerPromo')
         .then(response => response.json())
         .then(res => {
             this.setState({paidPromoData : res})
         })
+    }
+
+    usePromo = () => {
+        let nominalAfterPromo = Number(this.props.route.params.nominal) - this.state.promo_discount
+        this.props.navigation.navigate('InputNominalScreen', {
+            newNominalAfterPromo : nominalAfterPromo
+        })    
     }
 
     render(){
@@ -39,11 +47,30 @@ export default class Promo extends Component{
             <View style={ styles.container }>
                 <ImageBackground style={ styles.styleBackground } source={bg}>
                     <View style={ styles.containerMenus }>
-                        <Text style={{fontSize:20, fontWeight:'bold'}}>Free Promo</Text>
                         <FlatList data={this.state.promoData}
                             keyExtractor={(x, i) => i.toString()}
                             renderItem={({item}) =>
                                 <TouchableOpacity style={ styles.containerPromo}>
+                                    <View style={ styles.containerPromos }>
+                                        <View style={ styles.containerTextPromo }>
+                                            <Text style={ styles.styleTextPromo }>{`${item.promo_name}`}</Text>
+                                            <Text style={ styles.styleTextPromo }>Discount : {`${item.promo_discount}`}%</Text>
+                                            <Text style={ styles.styleTextExpired }>Expired {":"} {`${item.promo_expiredDate}`}</Text>
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            }
+                        />
+                    </View>
+                    <View style={ styles.containerMenus }>
+                        <Text style={{fontSize:24, fontWeight:'bold'}}>Your Exclusive Promo</Text>
+                        <FlatList data={this.state.paidPromoData}
+                            keyExtractor={(x, i) => i.toString()}
+                            renderItem={({item}) =>
+                                <TouchableOpacity style={ styles.containerPromo} onPress={() => {
+                                    this.setState({promo_discount: `${item.promo_discount}`})
+                                    this.usePromo().bind(this)
+                                }}>
                                     <View style={ styles.containerPromos }>
                                         <View style={ styles.containerTextPromo }>
                                             <Text style={ styles.styleTextPromo }>{`${item.promo_name}`}</Text>

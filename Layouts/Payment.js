@@ -1,15 +1,15 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, ImageBackground, Image } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-
 import scanQris from '../assets/scanQris.png';
 import findMerchant from '../assets/findMerchant.png';
+var bg = require("../img/background.png");
 
 export default class Payment extends Component{
     render(){
         return(
             <View style={ styles.container }>
-                <ImageBackground style={ styles.styleBackground }>
+                <ImageBackground style={ styles.styleBackground } source={bg}>
                     <View style={ styles.containerMenus }>
                         <TouchableOpacity style={ styles.conatinerTouchScan }
                             onPress={() => this.props.navigation.navigate('ScanQRScreen')}>
@@ -34,6 +34,8 @@ export default class Payment extends Component{
                                 </View>
                             </View>
                         </TouchableOpacity>
+
+                        
                     </View>
                 </ImageBackground>
             </View>
@@ -51,23 +53,21 @@ const styles = StyleSheet.create({
         backgroundColor: '#fff',
     },
     containerMenus: {
-        margin: 20
+        margin: 20,
     },
 
     conatinerTouchScan: {
-        backgroundColor: '#4287f5',
         marginTop: 10,
         borderRadius: 10,
         borderColor: '#fff',
-        borderWidth: 1,
     },
     containerScanQRIS: {
         width: '100%',
         height: 194,
-        backgroundColor: '#fff',
+        backgroundColor: 'rgba(255,255,255,0.3)',
         borderColor: 'black',
-        borderWidth: 1,
         borderRadius: 10,
+        borderWidth:1
     },
     containerImageScan: {
         justifyContent: 'center',
@@ -81,19 +81,18 @@ const styles = StyleSheet.create({
     styleTextQRIS: {
         textAlign: 'center',
         fontSize: 18,
+        fontWeight:'bold'
     },
 
     containerTouchFind: {
-        backgroundColor: '#4287f5',
         marginTop: 24,
         borderRadius: 10,
         borderColor: '#fff',
-        borderWidth: 1,
     },
     containerFind: {
         width: '100%',
         height: 194,
-        backgroundColor: '#fff',
+        backgroundColor: 'rgba(255,255,255,0.3)',
         borderColor: 'black',
         borderWidth: 1,
         borderRadius: 10,
@@ -111,5 +110,6 @@ const styles = StyleSheet.create({
     styleTextFind: {
         textAlign: 'center',
         fontSize: 18,
+        fontWeight:'bold'
     },
 });

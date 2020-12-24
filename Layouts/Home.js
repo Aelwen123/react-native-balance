@@ -36,6 +36,7 @@ class Home extends Component{
       user_name : '',
       user_email : '',
       phonenumber: '',
+      point : '',
       mycard : [],
       my_acccount: [
         {MyImage1},
@@ -47,7 +48,6 @@ class Home extends Component{
   componentDidMount(){
     this.updateCardData();
     this.getUserData();
-    this.getCardData();
   }
 
   getUserData = () => {
@@ -58,6 +58,7 @@ class Home extends Component{
         this.setState({user_name : res.user_name})
         this.setState({user_email : res.user_email})
         this.setState({phonenumber: res.user_phonenumber})
+        this.setState({point: res.user_point})
       })
     })
   }
@@ -67,15 +68,15 @@ class Home extends Component{
       fetch("http://192.168.100.136:3002/mycard/getCustomerCard/" + result)
       .then(response => response.json())
       .then(res => {
-        var count = Object.keys(res).length;
-        for(var i =0; i<=count; i++){
-          if(res[i].mycard_name === "clover"){
-            fetch("http://192.168.100.136:3002/mycard/update/bank/clover/" + res[i].mycard_number)
+        res.forEach(item => {
+          if(item.mycard_name == "clover"){
+            fetch("http://192.168.100.136:3002/mycard/update/bank/clover/" + item.mycard_number)
           }
-          else if (res[i].mycard_name === "gajek"){
-            fetch("http://192.168.100.136:3002/mycard/update/digitalpayment/gajek/" + res[i].mycard_number)
+          else if (item.mycard_name == "gajek"){
+            fetch("http://192.168.100.136:3002/mycard/update/digitalpayment/gajek/" + item.mycard_number)
           }
-        }
+        })
+        this.getCardData()
       }).catch(err => {
         console.log(err)
       })
@@ -103,7 +104,9 @@ class Home extends Component{
                     <Image source={lg} style={ styles.imglogo }/>
                     <View style={{ marginTop: 54, marginStart: 198, marginEnd: 40}}>
                       <TouchableOpacity
-                          onPress={() => this.props.navigation.navigate('NotificationScreen')}>
+                          onPress={() => this.props.navigation.navigate('NotificationScreen', {
+                            user_phonenumber: this.state.phonenumber
+                          })}>
                           <Icon name="bell-outline" size={20} style={{ color: colors.white }}/>           
                       </TouchableOpacity>
                     </View>
@@ -113,23 +116,40 @@ class Home extends Component{
                     <View>
                       <Text style={{color:'white', fontSize:20, fontWeight:'bold', marginStart: 18, flexDirection: 'column'}}>{this.state.user_name}</Text>
                       <Text style={{color:'white', marginStart: 18 }}>{this.state.user_email}</Text>
+                      <Text style={{color:'white', marginStart: 18, fontWeight: 'bold' }}>Your Point : {this.state.point}</Text>
                     </View>
                 </View>
                 
                 <View style={ styles.main }>
                   <Text style={{color:'white', fontSize:16, fontWeight:'200', marginStart: 10, marginTop: 20}}>My cards</Text>
+
+                  
+
                   <View style={{ paddingBottom: 2 }}>
                   <FlatList data={this.state.mycard}
                     horizontal={true}
                     keyExtractor={(y, i) => i.toString()}
                     style={{height:210}}
                     renderItem={({item}) =>
-                      <TouchableOpacity activeOpacity={0.95} style={{backgroundColor:'#ffffff0', borderRadius:20, marginStart: 8, }} onPress={() => console.log("HAHAHA")}>
+                      <TouchableOpacity activeOpacity={0.95} style={{backgroundColor:'#ffffff0', borderRadius:20, marginStart: 8, }} onPress={() => this.props.navigation.push('TopUpScreen', {
+                        source_mycard_type : `${item.mycard_type}`,
+                        source_mycard_name : `${item.mycard_name}`,
+                        source_mycard_balance : `${item.mycard_balance}`
+
+                      })}>
                         <View style={styles.card}>
                           <View style={styles.cardImage}>
                             <Image source={`${item.mycard_type}` == "digitalpayment" ? MyImage1 : MyImage2} style={{ marginTop: 4, width: '86%', height: '78%', resizeMode: 'stretch' }}/>
                               <View style={{position:'absolute', paddingTop:10}}>
-                                <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:16, textAlign: 'left', alignContent: 'center', marginStart: 30, marginTop: 60, letterSpacing: 1.2 }}>{`${item.mycard_name}`.toUpperCase()}</Text>
+                                <View style={{flexDirection:'row'}}>
+                                  <View>
+                                    <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:16, textAlign: 'left', alignContent: 'center', marginStart: 30, marginTop: 60, letterSpacing: 1.2 }}>{`${item.mycard_name}`.toUpperCase()}</Text>
+                                  </View>
+                                    <View style={ styles.containerTopUpText }>
+                                      <Text style={{ color:'#466FFF', fontSize:16, fontWeight:'200', marginTop: 0, textAlign: 'center', fontWeight:'bold' }}>{"+"} Top Up</Text>
+                                    </View>
+                                </View>
+                               
                                   <View style={{ flexDirection: 'row'}}>
                                     <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:18, textAlign: 'left', alignContent: 'center', marginStart: 30, marginTop: 20, }}>IDR </Text>
                                     <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:30, textAlign: 'left', alignContent: 'center', marginStart: 5, marginTop: 16, letterSpacing: 1}}>{`${item.mycard_balance}`}</Text>
@@ -179,6 +199,18 @@ const styles = StyleSheet.create({
     marginTop: 30,
     marginLeft: 25,
     width: 100
+  },
+  containerTopUp: {
+    backgroundColor:'white',
+    flex: 1,
+    position:'absolute',
+    left:270
+  },
+  containerTopUpText: {
+    borderRadius: 10,
+    justifyContent: 'center',
+    alignItems: 'center',
+    height: 50,
   },
   containerSmallCircle: {
     justifyContent: 'center',
@@ -238,7 +270,7 @@ const styles = StyleSheet.create({
   },
   cardImage1:{
     width:380, 
-    height:260, 
+    height:300, //260 
     borderRadius:20,
     padding: 10,
     marginStart: 90
@@ -270,7 +302,6 @@ const styles = StyleSheet.create({
     borderRadius:20
   },
   square: {
-    // width: 200,
     height: 105,
     borderRadius: 20,
     backgroundColor: 'white',
@@ -281,92 +312,3 @@ const styles = StyleSheet.create({
 });
 
 export default Home;
-
-// class HomeScreen extends React.Component {
-//   render(){
-//     return (
-//       // <View style={ styles.container }>
-//       //   <Text>Home Screen</Text>
-//       // </View>
-//       <MenuHome />
-//     );
-//   }
-// }
-
-// class PaymentScreen extends React.Component {
-//   render(){
-//     return (
-//       <View style={ styles.container }>
-//         <Text>Payment Screen</Text>
-//       </View>
-//     );
-//   }
-// }
-
-// class ProfileScreen extends React.Component {
-//   render(){
-//     return (
-//       <View style={ styles.container }>
-//         <Text>Profile Screen</Text>
-//       </View>
-//     );
-//   }
-// }
-
-// const styles = StyleSheet.create({
-//   container: {
-//     flex: 1,
-//     justifyContent: 'center',
-//     alignItems: 'center',
-//     backgroundColor: '#ffffff'
-//   }
-// });
-
-// const TabNavigator = createMaterialBottomTabNavigator(
-// {
-//   Home: {
-//     screen: HomeScreen, 
-//     navigationOptions: {
-//       tabBarIcon: ({ tintColor }) => (
-//         <View>
-//           <Icon style={[{color: tintColor}]} size={25} name={'ios-home'} />
-//         </View>
-//       ),
-//     }
-//   },
-//   Payment: {
-//     screen: PaymentScreen,
-//     navigationOptions: {
-//       tabBarIcon: ({ tintColor }) => (
-//         <View>
-//           <Icon style={[{color: tintColor}]} size={25} name={'ios-cash'} />
-//         </View>
-//       ),
-//       activeColor: '#ffffff',
-//       inactiveColor: '#92c5c2',
-//       barStyle: { backgroundColor: '#2163f6' },
-//     }
-//   },
-//   Profile: {
-//     screen: ProfileScreen,
-//     navigationOptions: {
-//       tabBarIcon: ({ tintColor }) => (
-//         <View>
-//           <Icon style={[{color: tintColor}]} size={25} name={'ios-person'} />
-//         </View>
-//       ),
-//       activeColor: '#ffffff',
-//       inactiveColor: '#92c5c2',
-//       barStyle: { backgroundColor: '#2163f6' },
-//     }
-//   },
-// },
-// {
-//   initialRouteName: 'Home',
-//   activeColor: '#ffffff',
-//   inactiveColor: '#92c5c2',
-//   barStyle: { backgroundColor: '#2163f6' },
-// }
-// );
-
-// export default createAppContainer(TabNavigator);

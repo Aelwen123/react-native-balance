@@ -1,29 +1,20 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, ImageBackground, Image, FlatList } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import CurrencyInput from 'react-native-currency-input';
 
 var bg = require("../img/background.png");
 
 import scanQris from '../assets/scanQris.png';
 import findMerchant from '../assets/findMerchant.png';
 
-export default class Promo extends Component{
+export default class PaidPromo extends Component{
     state = {
-        promoData : [],
         paidPromoData : []
     }
 
     componentDidMount(){
-        this.getPromo()
         this.getPaidPromo()
-    }
-
-    getPromo = async() => {
-        fetch('http://192.168.100.136:3002/promo/free')
-        .then(response => response.json())
-        .then(res => {
-            this.setState({promoData : res})
-        })
     }
 
     getPaidPromo = async() => {
@@ -33,22 +24,39 @@ export default class Promo extends Component{
             this.setState({paidPromoData : res})
         })
     }
-
+    
     render(){
         return(
             <View style={ styles.container }>
                 <ImageBackground style={ styles.styleBackground } source={bg}>
                     <View style={ styles.containerMenus }>
-                        <Text style={{fontSize:20, fontWeight:'bold'}}>Free Promo</Text>
-                        <FlatList data={this.state.promoData}
+                        <Text style={{fontSize:20, fontWeight:'bold'}}>Paid Promo</Text>
+                        <FlatList data={this.state.paidPromoData}
                             keyExtractor={(x, i) => i.toString()}
+                            style={{marginBottom:10}}
                             renderItem={({item}) =>
-                                <TouchableOpacity style={ styles.containerPromo}>
+                                <TouchableOpacity style={ styles.containerPromo} onPress={() => this.props.navigation.push('BuyPromo', {
+                                    promo_id : `${item._id}`
+                                })}>
                                     <View style={ styles.containerPromos }>
                                         <View style={ styles.containerTextPromo }>
                                             <Text style={ styles.styleTextPromo }>{`${item.promo_name}`}</Text>
-                                            <Text style={ styles.styleTextPromo }>Discount : {`${item.promo_discount}`}%</Text>
+                                            <View style={{display:'flex', flexDirection:'row'}}>
+                                                <Text style={ styles.styleTextPromo }>Discount: IDR </Text>
+                                                <CurrencyInput 
+                                                    mode='outlined' 
+                                                    placeholder="Input Nominal" 
+                                                    style={{fontSize:24, fontWeight:'bold'}} 
+                                                    value={`${item.promo_discount}`}
+                                                    editable={false}
+                                                    delimiter=","
+                                                    separator="."
+                                                    precision={0}
+                                                    keyboardType={'decimal-pad'}
+                                                />
+                                            </View>
                                             <Text style={ styles.styleTextExpired }>Expired {":"} {`${item.promo_expiredDate}`}</Text>
+                                            <Text style={ styles.styleTextExpired }>Price {":"} {`${item.promo_price}`}</Text>
                                         </View>
                                     </View>
                                 </TouchableOpacity>
@@ -57,12 +65,12 @@ export default class Promo extends Component{
                     </View>
                     <View style={{ alignItems:'center', marginTop: 20, }}>
                         <TouchableOpacity
-                            onPress={() => this.props.navigation.push('PaidPromo')}
+                            onPress={() => this.props.navigation.push('PromoScreen')}
                             style={[
                                 styles.containerButtonPay,{ 
                                     backgroundColor: '#4263D5', 
                                 }]}>
-                                <Text style={styles.styleTextPay}>Paid Promo</Text>
+                                <Text style={styles.styleTextPay}>Free Promo</Text>
                         </TouchableOpacity>
                     </View>
                 </ImageBackground>
@@ -78,11 +86,11 @@ const styles = StyleSheet.create({
     styleBackground: {
         width: '100%',
         height: '100%',
+        backgroundColor: '#fff',
     },
     containerMenus: {
         margin: 20,
-        height:550,
-        
+        height:550
     },
 
     containerPromo: {
@@ -93,7 +101,7 @@ const styles = StyleSheet.create({
 
     containerPromos: {
         width: '100%',
-        height: 150,
+        height: 170,
         backgroundColor: '#fff',
         borderColor: 'black',
         borderWidth: 1,
@@ -114,11 +122,10 @@ const styles = StyleSheet.create({
     },
     styleTextExpired: {
         marginStart: 20,
-        marginTop: 8,
+        marginTop: 5,
         fontSize: 15,
         fontWeight: '900',
     },
-
     containerButtonPay: {
         width: 310,
         height: 40,

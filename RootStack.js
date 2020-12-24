@@ -20,6 +20,11 @@ import SelectMerchantLocation from './Layouts/SelectMerchantLocation'
 import InputNominal from './Layouts/InputNominal';
 import EditProfile from './Layouts/EditProfile';
 import CustomerService from './Layouts/CustomerService';
+import FAQ from './Layouts/FaqAccordions'
+import TopUp from './Layouts/TopUp'
+import SecurityTopUp from './Layouts/SecurityPIN'
+import BuyPromo from './Layouts/BuyPromo'
+import PaidPromo from './Layouts/PaidPromo'
   
   const Stack = createStackNavigator();
   
@@ -56,7 +61,7 @@ import CustomerService from './Layouts/CustomerService';
                         options={{ headerShown: true, headerTitleAlign: 'center', title: 'Promo & Cashback' }}/>
           <Stack.Screen name="NotificationScreen"
                         component={Notification}
-                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Notifications' }}/>
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Transaction History' }}/>
           <Stack.Screen name="ScanQRScreen"
                         component={ScanQR}
                         options={{ headerShown: false, headerTitleAlign: 'center', title: ' ' }}/>
@@ -78,6 +83,21 @@ import CustomerService from './Layouts/CustomerService';
           <Stack.Screen name="CustomerServiceScreen"
                         component={CustomerService}
                         options={{ headerShown: true, headerTitleAlign: 'center', title: 'Customer Service', headerTransparent: false }}/>
+          <Stack.Screen name="FAQScreen"
+                        component={FAQ}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'FAQ', headerTransparent: true, headerTitleStyle: { color: '#ffffff' } }}/>
+          <Stack.Screen name="TopUpScreen"
+                        component={TopUp}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Top Up', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>
+          <Stack.Screen name="SecurityTopUpScreen"
+                        component={SecurityTopUp}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Security Pin', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>
+          <Stack.Screen name="BuyPromo"
+                        component={BuyPromo}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Buy Promo', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>
+          <Stack.Screen name="PaidPromo"
+                        component={PaidPromo}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Paid Promo', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>
         </Stack.Navigator>
       </NavigationContainer>
     );

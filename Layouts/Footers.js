@@ -33,7 +33,7 @@ export default class TabFooters extends Component{
                         <Button vertical>
                             <TouchableOpacity 
                                 activeOpacity={0.5}
-                                onPress={() => navigation.navigate("Payment")}>
+                                onPress={() => navigation.push("Payment")}>
                                 <View style={ styles.circle }>
                                     <Image source={qrcode} style={{ width: 26, height: 26, marginBottom: 2}}/>
                                     {/* <Icon active source={qrcode} name={qrcode} style={{ color: 'white', width: 20, height: 20 }} /> */}
@@ -44,7 +44,7 @@ export default class TabFooters extends Component{
                             </TouchableOpacity>
                         </Button>
                         
-                        <Button vertical onPress={() => navigation.navigate("ProfileScreen")}>
+                        <Button vertical onPress={() => navigation.push("ProfileScreen")}>
                             <View>
                                 <Icon active name="ios-person" style={{ color: '#4746FF'}} />
                             </View>

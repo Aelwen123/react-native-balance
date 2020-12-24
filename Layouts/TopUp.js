@@ -6,16 +6,14 @@ import { RadioButton } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import CurrencyInput from 'react-native-currency-input';
 
-class InputNominal extends Component{
+class TopUp extends Component{
     state = {
         nominal: '',
-        mycard_phonenumber: '',
+        mycard_number: '',
         mycard_type : '',
-        mycard : [],
-        errorbalance : '',
-        promo_name : '',
-        promo_discount : '',
-        nominalAfterPromo: this.props.route.params.newNominalAfterPromo
+        mycard_digitalpayment : [],
+        mycard_bank : [],
+        errorbalance : ''
     }
     
     onChangeText = (key, val) => {
@@ -31,8 +29,17 @@ class InputNominal extends Component{
             fetch("http://192.168.100.136:3002/mycard/getCustomerCard/" + result)
             .then(response => response.json())
             .then(res => {
-                this.setState({mycard: res})
-                this.setState({mycard_phonenumber: result})
+                res.forEach(item => {
+                    if(item.mycard_type == "digitalpayment"){
+                        this.setState(prevState => ({
+                            mycard_digitalpayment : [item, ...prevState.mycard_digitalpayment]
+                        }))
+                    } else {
+                        this.setState(prevState => ({
+                            mycard_bank : [item, ...prevState.mycard_bank]
+                        }))
+                    }
+                })
             }).catch(err => {
                 console.log(err)
             })
@@ -42,35 +49,26 @@ class InputNominal extends Component{
     render(){
         const NominalScreen = () => {
             const [checked, setChecked] = useState('');
-            const [allowpayment, setallowpayment] = useState(false)
-            const [nominal, setNominal] = useState(10000);
+            const [checkedDigital, setCheckedDigital] = useState('');
+            const [allowpaymentDigital, setallowpaymentDigital] = useState(false)
+            const [allowpaymentBank, setallowpaymentBank] = useState(false)
+            const [nominal, setNominal] = useState(20000);
+            const [Source_mycard_number, setSourceMycard_number] = useState('')
+            const [Source_mycard_type, setSourceMycard_type] = useState('')
+            const [Source_mycard_name, setSourceMycard_name] = useState('')
             const [mycard_number, setMycard_number] = useState('')
             const [mycard_type, setMycard_type] = useState('')
             const [mycard_name, setMycard_name] = useState('')
             const [errorBalance, setErrorbalance] = useState('')
-            const enabled = nominal > 9999 && nominal < 1000001 && !isNaN(nominal) && allowpayment == true && errorBalance == '';
+            const enabled = nominal > 9999 && nominal < 1000001 && !isNaN(nominal) && allowpaymentDigital == true && allowpaymentBank == true && errorBalance == '';
             return(
                 <View style={ styles.container }>
-                    <TouchableOpacity
-                        style={ styles.containerBox }
-                        onPress={() => null}>
-                        <View style={ styles.container1 }>
-                            <View style={ styles.containerText }>
-                                <Text style={ styles.merchant }>{this.props.route.params.merchant_name}</Text>
-                                <Text style={ styles.addr }>{this.props.route.params.merchant_location}</Text>
-                                <Text style={ styles.addr }>{this.props.route.params.merchant_address}</Text>
-                                <View style={ styles.timeSqr }>
-                                    <Text style={ styles.time }>{this.props.route.params.merchant_workhour_start} - {this.props.route.params.merchant_workhour_finish}</Text>
-                                </View>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-
-                    <View style={ styles.containerJudul }>
-                        <Text>Input Nominal</Text>
-                    </View> 
-
+                    <View style={{margin:10}}>
+                        <Text style={{fontWeight:'500', fontSize:16}}>Input Nominal Top Up</Text>
+                    </View>
+                    
                     <View style={{ marginStart: 20, borderColor: '#000000', borderWidth: 1, height: 50, marginTop: 10, marginEnd: 20, borderRadius: 10,  marginBottom: 20, }}>
+                        
                         <View style={{ flexDirection: 'row', marginStart: 20, }}>
                             <Text style={{ lineHeight: 44, fontSize: 16, paddingTop: 2, color: "#000000" }}>IDR    </Text>
                             <CurrencyInput 
@@ -89,14 +87,54 @@ class InputNominal extends Component{
                             />
                         </View>
                         <Text style={{ fontSize: 12, marginTop: 10, textAlign: 'right' }}>*min. IDR 10.000</Text>
-                        
+                    </View>
+                    <View style={{margin:10}}>
+                        <Text style={{fontWeight:'500', fontSize:16}}>To Account</Text>
+                    </View>
+                    <FlatList data={this.state.mycard_digitalpayment}
+                    alwaysBounceVertical={true}
+                    keyExtractor={(y, i) => i.toString()}
+                    style={{marginStart: 20, maxHeight:130}}
+                    renderItem={({item}) =>
+                        <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
+                            <RadioButton value={`${item.mycard_name}`}
+                                status={ checkedDigital === `${item.mycard_name}` ? 'checked' : 'unchecked' }
+                                onPress={() => {
+                                    setCheckedDigital(`${item.mycard_name}`)
+                                    setallowpaymentDigital(true)
+                                    setMycard_number(`${item.mycard_number}`)
+                                    setMycard_type(`${item.mycard_type}`)
+                                    setMycard_name(`${item.mycard_name}`)
+                                    if(`${item.mycard_balance}` < nominal){
+                                        setErrorbalance('Not enough!')
+                                    } else {
+                                        setErrorbalance('')
+                                    }
+                                    }} />
+                            <View style={{ flexDirection: 'row', marginLeft: 10}}>
+                                <Text style={{fontSize: 16, color: "#000000", textTransform:'uppercase', fontWeight:'bold' }}>{`${item.mycard_name}`} : </Text>
+                                <CurrencyInput 
+                                    mode='outlined' 
+                                    placeholder="Input Nominal" 
+                                    style={{ fontSize: 16, lineHeight:15}} 
+                                    value={`${item.mycard_balance}`}
+                                    unit="IDR "
+                                    delimiter=","
+                                    separator="."
+                                    precision={0}
+                                    keyboardType={'decimal-pad'}
+                                    editable={false}
+                                />
+                            </View>
+                        </View>
+                        }
+                    />
+
+                    <View style={{margin:10}}>
+                        <Text style={{fontWeight:'500', fontSize:16}}>Source Account</Text>
                     </View>
 
-                    <View style={ styles.containerJudul }>
-                        <Text>Select Source Account</Text>
-                    </View>
-
-                    <FlatList data={this.state.mycard}
+                    <FlatList data={this.state.mycard_bank}
                     alwaysBounceVertical={true}
                     keyExtractor={(y, i) => i.toString()}
                     style={{marginStart: 20, maxHeight:130}}
@@ -106,10 +144,10 @@ class InputNominal extends Component{
                                 status={ checked === `${item.mycard_name}` ? 'checked' : 'unchecked' }
                                 onPress={() => {
                                     setChecked(`${item.mycard_name}`)
-                                    setallowpayment(true)
-                                    setMycard_number(`${item.mycard_number}`)
-                                    setMycard_type(`${item.mycard_type}`)
-                                    setMycard_name(`${item.mycard_name}`)
+                                    setallowpaymentBank(true)
+                                    setSourceMycard_number(`${item.mycard_number}`)
+                                    setSourceMycard_type(`${item.mycard_type}`)
+                                    setSourceMycard_name(`${item.mycard_name}`)
                                     if(`${item.mycard_balance}` < nominal){
                                         setErrorbalance('Not enough!')
                                     } else {
@@ -136,35 +174,15 @@ class InputNominal extends Component{
                         }
                     />
                     
-                    <TouchableOpacity
-                        style={ styles.containerBox1 }
-                        onPress={() => this.props.navigation.navigate("PromoScreen", {
-                            nominal : this.state.nominal
-                        })}>
-                        <View style={ styles.container2 }>
-                            <View style={ styles.containerText1 }>
-                                <Text style={{ textAlign: 'center' }}>PROMO {"&"} CASHBACK</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
-
-                    <View>
-                        <Text>Total amount before promo : {this.state.nominal}</Text>
-                        <Text>Total amount after promo : {this.state.nominalAfterPromo}</Text>
-                    </View>
-                    
                     <View style={{ alignItems:'center', marginTop: 84, marginBottom: 0 }}>
-
                         <TouchableOpacity
                             disabled={ !enabled }
-                            onPress={() => this.props.navigation.navigate('SecurityPINScreen', {
-                                merchant_id_gajek : this.props.route.params.merchant_id_gajek,
-                                merchant_clover_account : this.props.route.params.merchant_clover_account,
+                            onPress={() => this.props.navigation.navigate('SecurityTopUpScreen', {
                                 nominal : nominal,
                                 mycard_number : mycard_number,
-                                mycard_type : mycard_type,
                                 mycard_name : mycard_name,
-                                mycard_phonenumber : this.state.mycard_phonenumber
+                                Source_mycard_number : Source_mycard_number,
+                                Source_mycard_name : Source_mycard_name
                             })}
                             style={[
                                 styles.containerBtnSearch,
@@ -174,7 +192,6 @@ class InputNominal extends Component{
                                 ]}>
                             <Text style={{ textAlign: 'center', fontSize: 20, lineHeight: 43, color: '#ffffff', fontSize: 18 }}>NEXT</Text>
                         </TouchableOpacity>
-
                     </View>
             </View>
             );
@@ -185,7 +202,7 @@ class InputNominal extends Component{
     }
 }
 
-export default InputNominal;
+export default TopUp;
 
 const styles = StyleSheet.create({
     container: {

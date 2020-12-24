@@ -1,178 +1,282 @@
 import React, { Component, useState, useRef, useEffect } from 'react';
-import { View, Text, KeyboardAvoidingView, StyleSheet } from 'react-native';
-
-import { useNavigation } from '@react-navigation/native';
+import { View, Text, KeyboardAvoidingView, StyleSheet, Alert } from 'react-native';
 import { TextInput, TouchableOpacity } from 'react-native-gesture-handler';
 
-const VerifikasiOTP = () => {
-    const navigation = useNavigation()
-    let textInput = useRef(null)
-    let clockCall = null
-    const lengthInput = 4;
-    const defaultCountdown = 5;
-    const [internalVal, setInternalVal] = useState("")
-    const [countdown, setCountdown] = useState(defaultCountdown)
-    const [enableResend, setEnableResend] = useState(false)
-
-    useEffect(() => {
-        clockCall = setInternalVal(() => {
-            decrementClock();
-        }, 1000)
-        return () => {
-            clearInterval(clockCall)
-        }
-    })
-
-    const decrementClock = () => {
-        if (countdown === 0) {
-            setEnableResend(true)
-            setCountdown(0)
-            clearInterval(clockCall)
-        } else {
-            setCountdown(countdown -1)
-        }
+export default class VerifikasiOTP extends Component{
+    constructor(props){
+        super(props);
+        this.state = {
+            pin1: '',
+            pin2: '',
+            pin3: '',
+            pin4: '',
+            otp_code:'',
+            timer: 30,
+        };
     }
 
-    const onChangeText = (val) => {
-        setInternalVal(val)
-        // if (val.length === lengthInput) {
-        //     navigation.navigate('TheHome')
-        // }
+    componentDidMount = () => {
+        fetch('http://192.168.100.136:3002/email/sendEmail/' + this.props.route.params.user_phonenumber)
+        .then(response => response.json())
+        .then(res => {
+            this.setState({otp_code: res.otp_code})
+        })
+        this.refs.pin1ref.focus();
+
+        this.interval = setInterval(
+            () => this.setState((prevState)=> ({ timer: prevState.timer - 1 })),
+            1000
+        );
     }
 
-    const onResendOTP = () => {
-        if (enableResend) {
-            setCountdown(defaultCountdown)
-            setEnableResend(false)
-            clearInterval(clockCall)
-            clockCall = setInternalVal(() => {
-                decrementClock()
-            }, 1000)
+    componentDidUpdate(){
+        if(this.state.timer === 0){ 
+            clearInterval(this.interval);
         }
     }
 
-    const onChangeNumber = () => {
-        setInternalVal("")
+    componentWillUnmount(){
+        clearInterval(this.interval);
     }
 
-    useEffect(() => {
-        textInput.focus()
-    },[])    
+    onResendOTP = () => {
+        if (this.state.timer === 0) {
+            this.setState({ 
+                timer: 30,
+            })
 
-    return(
-        <View style={ styles.container }>
-            <KeyboardAvoidingView
-                keyboardVerticalOffset={50}
-                behavior={'padding'}
-                style={ styles.containerAvoiddingView }>
-                
-                <Text style={ styles.textTitle }>
-                    {"Input your OTP code sent via Email"}
-                </Text>
+            this.interval = setInterval(
+                () => this.setState((prevState)=> ({ timer: prevState.timer - 1 })),
+                1000
+            );
 
-                <View>
-                    <TextInput
-                        ref={(input) => textInput = input}
-                        onChangeText={onChangeText}
-                        style={{width: 0, height: 0}}
-                        value={internalVal}
-                        maxLength={lengthInput}
-                        returnKeyType="done"
-                        keyboardType="numeric"
-                    />
-                    <View style={ styles.containerInput }>
-                    {
-                        Array(lengthInput).fill().map((data, index) => (
-                            <View key={index} style={ styles.cellView } >
-                                <Text style={ styles.cellText }
-                                    onPress={() => textInput.focus()}>
-                                        { internalVal && internalVal.length > 0 ? internalVal[index] : "" }
-                                </Text>
-                        </View>
-                        ))
-                    }
-                    </View>
+            fetch('http://192.168.100.136:3002/email/sendEmail/' + this.props.route.params.user_phonenumber)
+            .then(response => response.json())
+            .then(res => {
+                this.setState({otp_code: res.otp_code})
+            })
+        }
+    }
+
+    onClear = () => {
+        this.setState({
+            pin1: '',
+            pin2: '',
+            pin3: '',
+            pin4: '',
+        })
+    }
+
+    render(){
+        const { pin1, pin2, pin3, pin4 } = this.state;
+        
+        return(
+            <View style={ styles.container }>
+
+                <View style={ styles.containerJudul }>
+                    <Text style={ styles.textTitle }>
+                        {"Input your OTP code sent via Email"}
+                    </Text>
+                </View>
+
+                <View style={ styles.containerTextInput }>
+                    <TextInput 
+                        ref={"pin1ref"}
+                        onChangeText={(pin1) => {
+                            this.setState({ pin1: pin1 })
+
+                            if (pin1 != '') {
+                                this.refs.pin2ref.focus() ? '#ffffff' : '#f5f4f2'
+                            }
+                        }}
+                        value={pin1}
+                        maxLength={1}
+                        style={ styles.styleTextInput1 } />
+
+                    <TextInput 
+                        ref={"pin2ref"}
+                        onChangeText={(pin2) => {
+                            this.setState({ pin2: pin2 })
+
+                            if (pin2 != '') {
+                                this.refs.pin3ref.focus()
+                            }
+                        }}
+                        value={pin2}
+                        maxLength={1}
+                        style={ styles.styleTextInput2 } />
+
+                    <TextInput 
+                        ref={"pin3ref"}
+                        onChangeText={(pin3) => {
+                            this.setState({ pin3: pin3 })
+
+                            if (pin3 != '') {
+                                this.refs.pin4ref.focus()
+                            }
+                        }}
+                        value={pin3}
+                        maxLength={1}
+                        style={ styles.styleTextInput3 } />
+
+                    <TextInput 
+                        ref={"pin4ref"}
+                        onChangeText={(pin4) => {
+                            this.setState({ pin4: pin4 })
+
+                            if (this.state.pin1 + this.state.pin2 + this.state.pin3 + pin4 == this.state.otp_code) {
+                                Alert.alert(
+                                    "SUCCESS!",
+                                    "You have successfully verified your phone number",
+                                    [
+                                        {
+                                            text: "OK", onPress: () => this.props.navigation.navigate("TheHome", {
+                                                token : this.props.route.params.token,
+                                                user_phonenumber : this.props.route.params.user_phonenumber,
+                                                user_email: this.props.route.params.user_email,
+                                                user_name: this.props.route.params.user_name
+                                            })
+                                        }
+                                    ]
+                                )
+                            } else {
+                                Alert.alert(
+                                    "ERROR!",
+                                    "Your PIN is Error!",
+                                    [
+                                        {
+                                            text: "OK", onPress: () => console.log('OK')
+                                        }
+                                    ]
+                                )
+                                this.onClear()
+                                this.refs.pin1ref.focus();
+                            }
+                        }}
+                        value={pin4}
+                        maxLength={1}
+                        style={ styles.styleTextInput4 } />
+
                 </View>
 
                 <View style={ styles.bottomView }>
-                    <TouchableOpacity onPress={onChangeNumber}>
+                    <TouchableOpacity onPress={this.onClear}>
                         <View style={ styles.btnChangeNumber }>
                             <Text style={ styles.textChange }>Change Number</Text>
                         </View>
                     </TouchableOpacity>
 
-                    <TouchableOpacity onPress={onResendOTP}>
+                    <TouchableOpacity onPress={this.onResendOTP}>
                         <View style={ styles.btnResend }>
-                            <Text style={[ styles.textResend,
-                                {
-                                    color: enableResend ? '#234db7' : 'gray'
-                                } ]}>Resend OTP ({countdown})</Text>
+                            <Text style={ styles.textResend }>
+                                Resend OTP ({this.state.timer})
+                            </Text>
                         </View>
                     </TouchableOpacity>
                 </View>
-            </KeyboardAvoidingView>
-        </View>
-    );
+            </View>
+        );
+    }
 }
-
-export default VerifikasiOTP;
 
 const styles = StyleSheet.create({
     container: {
-        flex: 1
-    },
-    containerAvoiddingView: {
+        backgroundColor: '#ffffff',
         flex: 1,
-        alignItems: 'center',
-        padding: 10
     },
-    textTitle: {
-        marginTop: 50,
-        marginBottom: 50,
-        fontSize: 16
-    },
-    containerInput: {
-        flexDirection: 'row',
-        alignItems: 'center',
-        justifyContent: 'center'
-    },
-    cellView: {
-        paddingVertical: 11,
-        width: 40,
-        margin: 5,
+    containerJudul: {
         justifyContent: 'center',
         alignItems: 'center',
-        borderBottomWidth: 1.5
     },
-    cellText: {
+    textTitle: {
+        marginBottom: 0,
+        marginTop: 120,
+        fontSize: 16
+    },
+    containerTextInput: {
+        justifyContent: 'space-evenly',
+        flexDirection: 'row',
+        marginTop: 30,
+        padding: 4,
+    },
+    styleTextInput1: {
+        backgroundColor: '#ffffff',
+        alignSelf: 'center',
+        borderColor: 'gray',
         textAlign: 'center',
-        fontSize: 16,
+        fontWeight: '600',
+        borderRadius: 10,
+        borderWidth: 1,
+        fontSize: 20,
+        width: '14%',
+        padding: 6,
+        height: 50,
+    },
+    styleTextInput2: {
+        backgroundColor: '#ffffff',
+        alignSelf: 'center',
+        borderColor: 'gray',
+        textAlign: 'center',
+        fontWeight: '600',
+        borderRadius: 10,
+        borderWidth: 1,
+        fontSize: 20,
+        width: '14%',
+        padding: 6,
+        height: 50,
+    },
+    styleTextInput3: {
+        backgroundColor: '#ffffff',
+        alignSelf: 'center',
+        borderColor: 'gray',
+        textAlign: 'center',
+        fontWeight: '600',
+        borderRadius: 10,
+        borderWidth: 1,
+        fontSize: 20,
+        width: '14%',
+        padding: 6,
+        height: 50,
+    },
+    styleTextInput4: {
+        backgroundColor: '#ffffff',
+        alignSelf: 'center',
+        borderColor: 'gray',
+        textAlign: 'center',
+        fontWeight: '600',
+        borderRadius: 10,
+        borderWidth: 1,
+        fontSize: 20,
+        width: '14%',
+        padding: 6,
+        height: 50,
     },
     bottomView: {
+        justifyContent: 'flex-start',
+        alignItems: 'flex-end',
         flexDirection: 'row',
-        flex: 1,
-        justifyContent: 'flex-end',
+        alignSelf: 'center',
         marginBottom: 50,
-        alignItems: 'flex-end'
+        flex: 1,
     },
     btnChangeNumber: {
+        alignItems: 'flex-start',
+        justifyContent: 'center',
+        borderRadius: 10,
         width: 150,
         height: 50,
-        borderRadius: 10,
-        alignItems: 'flex-start',
-        justifyContent: 'center'
     },
     textChange: {
-        color: '#234db7',
         alignItems: 'center',
-        fontSize: 15
+        color: '#234db7',
+        fontSize: 15,
     },
     btnResend: {
         width: 150,
         height: 50,
         borderRadius: 10,
         alignItems: 'flex-end',
-        justifyContent: 'center'
+        justifyContent: 'center',
     },
     textResend: {
         alignItems: 'center',

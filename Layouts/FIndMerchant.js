@@ -10,7 +10,7 @@ var bg = require("../img/background.png");
 
 export default class FindMerchant extends Component{
     state = {
-        merchantName: '', merchantData: [], viewMerchantData : false, errormessage :''
+        merchantName: 'toko', merchantData: [], viewMerchantData : false, errormessage :''
     }
     onChangeText = (key, val) => {
         this.setState({ [key]: val })
@@ -66,7 +66,7 @@ export default class FindMerchant extends Component{
                         <Text style={{color: 'red'}}>{this.state.errormessage}</Text>
                     </View>
                     <FlatList data={this.state.merchantData}
-                        style={{maxHeight: this.state.viewMerchantData === true ? 400 : 0, width: 340}}
+                        style={{maxHeight: this.state.viewMerchantData === true ? 400 : 0, width: 300, borderRadius:20, borderWidth: this.state.viewMerchantData === true ? 1 : 0, backgroundColor: 'rgba(255,255,255,0.3)'}}
                         keyExtractor={(x, i) => i.toString()}
                         renderItem={({item}) =>
                             <TouchableOpacity style={styles.viewMerchant} onPress = {() => this.props.navigation.navigate('SelectMerchantLocationScreen', {merchant_name : `${item.merchant_name}`})}>
@@ -118,22 +118,13 @@ const styles = StyleSheet.create({
   },
 
   viewMerchant : {
-      width: 310,
-      height: 120,
-      backgroundColor: '#40a8c4',
-      padding: 20,
       alignContent:'center',
       color: '#90dae1',
-      borderRadius: 20,
-      fontSize: 18,
-      fontWeight: '500',
-      shadowColor:'black',
-      shadowOffset:{width: 0, height: 2},
-      shadowOpacity: 0.25,
-      shadowRadius: 3.84,
-      elevation: 5,
       alignSelf:'center',
       margin: 10,
+      borderWidth:1,
+      borderRadius:20,
+      padding:20
   },
   
   containerJudul: {

@@ -1,5 +1,5 @@
 import React , { Component, useState, useRef, useEffect } from 'react';
-import { View, Text, StyleSheet, Image, TouchableOpacity, Keyboard, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, Image, TouchableOpacity, Keyboard, ImageBackground, Alert } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TouchableRipple } from 'react-native-paper';
 import { TextInput } from 'react-native-gesture-handler';
@@ -8,13 +8,43 @@ import background from '../assets/background.png';
 
 class CustomerService extends Component{
     state = {
-        email: '', 
+        email: this.props.route.params.user_email, 
         kindComplaint: '',
         feedBack: '', 
     }
     onChangeText = (key, val) => {
         this.setState({ [key]: val })
     }
+
+    onSubmit = () => { 
+        const { email, kindComplaint, feedBack } = this.state
+        fetch('http://192.168.100.136:3002/email/receiveEmail', {
+            method: 'post',
+            headers: {
+                'Accept' : 'application/json',
+                'Content-Type': 'application/json'
+            },
+            body:JSON.stringify({
+                senderAccount :email,
+                subject : kindComplaint,
+                text: feedBack
+            })
+        })
+        .then(response => response.json())
+        .then(res => {
+            Alert.alert(
+                "SUCCESS!",
+                "Thank you for your message, we will read it and apply it carefully",
+                [
+                    {
+                        text: "OK", onPress: () => this.props.navigation.navigate("TheHome")
+                    }
+                ]
+            )
+        })
+    }
+
+
     render(){
         const { email, kindComplaint, feedBack } = this.state;
         const enabled = email.length > 8 && !email.includes('@') && !email.includes('.com') || kindComplaint.length > 5 && kindComplaint.length < 20 && feedBack.length > 5 && feedBack.length < 80;
@@ -69,7 +99,7 @@ class CustomerService extends Component{
                     <View style={{ alignItems:'center', marginTop: 40, marginBottom: 20 }}>
                         <TouchableOpacity
                             disabled={ !enabled }
-                            onLongPress={() => this.props.navigation.navigate('ProfileScreen')}
+                            onPress={this.onSubmit.bind(this)}
                             style={[
                                 styles.containerSubmit,
                                 {

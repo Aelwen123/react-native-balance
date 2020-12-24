@@ -1,5 +1,5 @@
 import React, { Component, useState } from 'react';
-import { View, Text, Image, TextInput, StyleSheet } from 'react-native';
+import { View, Text, Image, TextInput, StyleSheet, BackHandler, Alert } from 'react-native';
 import Logo from '../assets/bubblelogin.png';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 // import {Actions} from 'react-native-router-flux';
@@ -19,9 +19,44 @@ export default class Security extends Component{
     }
 
     componentDidMount(){
-        console.log(this.props)
+        BackHandler.addEventListener("hardwareBackPress",this.handleBackPress);
         this.currentDate()
+        return false;
     }
+
+    componentWillUnmount() {
+        BackHandler.removeEventListener("hardwareBackPress", this.handleBackPress);
+    }    
+
+    handleBackPress = () => {
+        Alert.alert(
+            "Confirmation",
+            "Are you sure you want to Cancel the Order?",
+            [
+                {
+                    text: "Yes",
+                    onPress: () => {
+                        return this.props.navigation.navigate('Payment');
+                    },
+                },
+                {
+                    text: "No",
+                    onPress: () => {
+                        console.log("Cancel Pressed");
+                    },
+                },
+            ],
+            { cancelable: true }
+        );
+        return true;
+    }
+
+    onClear = () => {
+        this.setState({
+            securitypin: ''
+        })
+    }
+
 
     currentDate = () => {
         var date = new Date().getDate();
@@ -68,6 +103,7 @@ export default class Security extends Component{
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
+                    user_phonenumber : this.props.route.params.mycard_phonenumber,
                     senderAccountNumber : this.props.route.params.mycard_number,
                     debitcardpin : this.state.securitypin,
                     receiverAccountNumber : this.props.route.params.merchant_clover_account,

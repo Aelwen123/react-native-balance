@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { Text, View, StyleSheet, Button, Image } from 'react-native';
+import { Text, View, StyleSheet, Button, Image, ImageBackground } from 'react-native';
 import { BarCodeScanner } from 'expo-barcode-scanner';
 
 import qris from '../assets/qris.png';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 import { useNavigation } from '@react-navigation/native';
+
+var bg = require("../img/background.png");
 
 export default function App() {
   const [hasPermission, setHasPermission] = useState(null);
@@ -49,21 +51,23 @@ export default function App() {
 
   return (
     <View style={ styles.container }>
+      <ImageBackground style={{height:'100%', width:'100%'}} source={bg}>
         <View style={ styles.containerScanQR }>
-        <BarCodeScanner
-            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned} style={ styles.containerBarcode }/>
-            {/* StyleSheet.absoluteFillObject */}
-            <TouchableOpacity activeOpacity={2}
-                onPress={() => navigation.navigate('Payment')}>
-                <View style={ styles.imageQris }>
-                    <Image source={ qris } />
-                </View>
-                <View style={ styles.containerSkipScreen }>
-                    <Text style={ styles.styleText }>Tap anywhere to skip the screen</Text>
-                </View>
-            </TouchableOpacity>
-            {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
+          <BarCodeScanner
+              onBarCodeScanned={scanned ? undefined : handleBarCodeScanned} style={ styles.containerBarcode }/>
+              {/* StyleSheet.absoluteFillObject */}
+              <TouchableOpacity activeOpacity={2}
+                  onPress={() => navigation.navigate('Payment')}>
+                  <View style={ styles.imageQris }>
+                      <Image source={ qris } />
+                  </View>
+                  <View style={ styles.containerSkipScreen }>
+                      <Text style={ styles.styleText }>Tap anywhere to skip the screen</Text>
+                  </View>
+              </TouchableOpacity>
+              {scanned && <Button title={'Tap to Scan Again'} onPress={() => setScanned(false)} />}
         </View>
+      </ImageBackground>
     </View>
   );
 }

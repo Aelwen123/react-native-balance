@@ -1,8 +1,9 @@
 import React, { Component, useState } from 'react';
-import { View, Text, Image, TextInput, StyleSheet, FlatList } from 'react-native';
+import { View, Text, Image, TextInput, StyleSheet, FlatList, ImageBackground } from 'react-native';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TouchableOpacity, ScrollView } from 'react-native-gesture-handler';
 import { Card, Button, Title, Paragraph } from 'react-native-paper'
+var bg = require("../img/background.png");
 
 export default class SelectMerchantLocation extends Component{
     state = {
@@ -40,44 +41,48 @@ export default class SelectMerchantLocation extends Component{
     render(){
         return(
             <View style={ styles.container }>
-                <ScrollView
-                    showsVerticalScrollIndicator={true}
-                    scrollEventThrottle={14}
-                    style={{overflow:'hidden', marginTop: 16, marginBottom: 16, paddingTop: 0, height:100}}>
+                <ImageBackground source={bg} style={ {width: '100%', height: '100%'} }>
+                    <ScrollView
+                        showsVerticalScrollIndicator={true}
+                        scrollEventThrottle={14}
+                        style={{overflow:'hidden', marginTop: 16, marginBottom: 16, paddingTop: 0, height:100}}>
 
-                <View style={ styles.containerJudul }>
-                    <Text style={ styles.styleText }>Choose Location Merchant</Text>
-                </View>
+                    <View style={ styles.containerJudul }>
+                        <Text style={ styles.styleText }>Choose Location Merchant</Text>
+                    </View>
 
-                <FlatList data={this.state.merchantData}
-                        style={{maxHeight: this.state.viewMerchantData === true ? 1000 : 0, width: 390}}
-                        keyExtractor={(x, i) => i.toString()}
-                        renderItem={({item}) =>
-                            <TouchableOpacity
-                                style={ styles.containerBox }
-                                onPress={() => this.props.navigation.navigate("InputNominalScreen", {
-                                    merchant_name: `${item.merchant_name}`,
-                                    merchant_location : `${item.merchant_location}`,
-                                    merchant_address : this.state.address,
-                                    merchant_workhour_start : `${item.merchant_workhour_start}`,
-                                    merchant_workhour_finish : `${item.merchant_workhour_finish}`,
-                                    merchant_id_gajek : `${item.merchant_id_gajek}`,
-                                    merchant_clover_account : `${item.merchant_clover_account}`
-                                })}>
-                                <View style={ styles.container1 }>
-                                    <View style={ styles.containerText }>
-                                        <Text style={ styles.merchant }>{`${item.merchant_name}`}</Text>
-                                        <Text style={ styles.addr }>{`${item.merchant_location}`}</Text>
-                                        <Text style={ styles.addr }>{this.state.address}</Text>
-                                        <View style={ styles.timeSqr}>
-                                            <Text style={ styles.time }>{`${item.merchant_workhour_start}`} - {`${item.merchant_workhour_finish}`}</Text>
+                    <View style={styles.form}>
+                    <FlatList data={this.state.merchantData}
+                            style={{maxHeight: this.state.viewMerchantData === true ? 1000 : 0, width: 390}}
+                            keyExtractor={(x, i) => i.toString()}
+                            renderItem={({item}) =>
+                                <TouchableOpacity
+                                    style={ styles.containerBox }
+                                    onPress={() => this.props.navigation.navigate("InputNominalScreen", {
+                                        merchant_name: `${item.merchant_name}`,
+                                        merchant_location : `${item.merchant_location}`,
+                                        merchant_address : this.state.address,
+                                        merchant_workhour_start : `${item.merchant_workhour_start}`,
+                                        merchant_workhour_finish : `${item.merchant_workhour_finish}`,
+                                        merchant_id_gajek : `${item.merchant_id_gajek}`,
+                                        merchant_clover_account : `${item.merchant_clover_account}`
+                                    })}>
+                                    <View style={ styles.container1 }>
+                                        <View style={ styles.containerText }>
+                                            <Text style={ styles.merchant }>{`${item.merchant_name}`}</Text>
+                                            <Text style={ styles.addr }>{`${item.merchant_location}`}</Text>
+                                            <Text style={ styles.addr }>{this.state.address}</Text>
+                                            <View style={ styles.timeSqr}>
+                                                <Text style={ styles.time }>{`${item.merchant_workhour_start}`} - {`${item.merchant_workhour_finish}`}</Text>
+                                            </View>
                                         </View>
                                     </View>
-                                </View>
-                            </TouchableOpacity>
-                        }
-                />
-                </ScrollView>
+                                </TouchableOpacity>
+                            }
+                    />
+                    </View>
+                    </ScrollView>
+                </ImageBackground>
             </View>
         );
     }
@@ -87,6 +92,11 @@ const styles = StyleSheet.create({
     container: {
         backgroundColor: '#ffffff',
         flex: 1,
+    },
+    form:{
+        flex:1,
+        justifyContent:'center',
+        alignItems:'center',
     },
     containerJudul: {
         marginStart: 20,

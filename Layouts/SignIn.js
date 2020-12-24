@@ -20,6 +20,7 @@ export default class SignIn extends React.Component{
         }
 
         signIn = () => {
+            console.log('haha')
             const { phonenumber, securitypin } = this.state
             fetch('http://192.168.100.136:3002/customer/signin', {
                 method: 'POST',
@@ -44,7 +45,9 @@ export default class SignIn extends React.Component{
                     AsyncStorage.getItem('token', (err, result) => {
                         this.props.navigation.navigate('TheHome', {
                             token : result,
-                            user_phonenumber : res.user_phonenumber
+                            user_phonenumber : res.user_phonenumber,
+                            user_email: res.user_email,
+                            user_name: res.user_name
                         })
                     })
                 }
@@ -56,8 +59,7 @@ export default class SignIn extends React.Component{
 
         
         render(){            
-            const { phonenumber, securitypin } = this.state;
-            const enabled = phonenumber.length > 9 && phonenumber.length < 13 && securitypin.length > 3;
+            const { phonenumber, securitypin, submitButton } = this.state;
                 
             return(
                 <View style={ styles.container }>
@@ -74,24 +76,31 @@ export default class SignIn extends React.Component{
                         <View style={{ justifyContent: 'center', alignItems: 'center' }}>
                             <View style={styles.form}>
     
-                                <View style={styles.input}>
+                                <View style={[ styles.input, this.state.phonenumber.length > 9 && this.state.phonenumber.length < 13 && this.state.phonenumber.substr(0,1) !== '8' && !isNaN(phonenumber) ? styles.noterror : styles.error  ]}>
                                     <Icon name='phone' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
                                     <TextInput 
+                                        ref={"phonenumber"}
                                         keyboardType='numeric' 
                                         style={styles.textinput} 
-                                        mode='outlined' placeholder="Phone number" 
-                                        onSubmitEditing={() => 
-                                            this._securityinput && this._securityinput.focus()
-                                        }
-                                        onChangeText={val => this.onChangeText('phonenumber', val)}>
+                                        mode='outlined' 
+                                        placeholder="Phone number" 
+                                        onSubmitEditing={() => { this.securitypin.focus(); }}
+                                        onChangeText={val => this.onChangeText('phonenumber', val) }>
                                         <Text>{this.state.phonenumber}</Text>
                                     </TextInput>
                                 </View>
     
-                                <View style={styles.input}>
+                                <View style={[ styles.input, this.state.securitypin.length >= 4 && this.state.securitypin.length <= 4 && !isNaN(securitypin) ? styles.noterror : styles.error ]}>
                                     <Icon name='onepassword' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
-                                    <TextInput keyboardType='numeric' style={styles.textinput} mode='outlined' placeholder="Security pin" secureTextEntry={true} onChangeText={val => this.onChangeText('securitypin', val)}>
-                                        <Text>{this.state.securitypin}</Text>
+                                    <TextInput 
+                                        ref={(securitypin) => { this.securitypin = securitypin; }}
+                                        keyboardType='numeric' 
+                                        style={styles.textinput} 
+                                        mode='outlined' 
+                                        placeholder="Security pin" 
+                                        secureTextEntry={true} 
+                                        onChangeText={val => this.onChangeText('securitypin', val) }>
+                                        <Text style={{ textAlign: 'center' }}>{this.state.securitypin}</Text>
                                     </TextInput>
                                 </View>
                             
@@ -101,13 +110,13 @@ export default class SignIn extends React.Component{
                         <View style={ styles.bottom }>
                             <View style={{alignItems:'center', marginTop: 0 }}>
                                 <TouchableOpacity
-                                    disabled={ !enabled }
-                                    onLongPress={() => this.props.navigation.navigate('TheHome')}
+                                    disabled={ this.state.phonenumber == '' && this.state.securitypin >= 4 && this.state.securitypin <= 4 && this.state.phonenumber.substr(0,1) != '8' }
+                                    onPress={this.signIn.bind(this)}
                                     style={{ backgroundColor: '#4287f5', borderRadius: 20 }}
                                     style={[
                                         styles.styleButtonSignin,
                                             { 
-                                                backgroundColor: enabled ? '#4263D5' : '#4263D510'
+                                                backgroundColor: this.state.phonenumber != '' && this.state.securitypin != '' && this.state.phonenumber.substr(0,1) != '8' ? '#4263D5' : '#4263D550'
                                             }
                                         ]}
                                     onPress={this.signIn.bind(this)}>

@@ -106,14 +106,18 @@ export default class Profile extends Component{
                     </View>
 
                     <View style={ styles.containerOtherInfo }>
-                        <TouchableOpacity style={ styles.styleButtonFAQ }>
+                        <TouchableOpacity style={ styles.styleButtonFAQ } onPress={() => this.props.navigation.navigate('FAQScreen')}>
                             <Image source={icon_faq} style={{ marginTop: 10, marginStart: 22, width: 22, height: 22, marginEnd: 20, resizeMode: 'contain' }}/>
                             <Text style={{ lineHeight: 40, fontSize: 16 }}>FAQ</Text>
                             <Image source={arrow} style={{ marginTop: 14, marginStart: '68%', width: 14, height: 14, marginEnd: 30, resizeMode: 'contain' }}/>
                         </TouchableOpacity>
 
                         <TouchableOpacity style={{ backgroundColor: '#ffffff', height: 50, flexDirection: 'row' }}
-                            onPress={() => this.props.navigation.navigate('CustomerServiceScreen')}>
+                            onPress={() => this.props.navigation.navigate('CustomerServiceScreen', {
+                                user_name : this.state.user_name,
+                                user_email : this.state.user_email,
+                                phonenumber: this.state.phonenumber,
+                            })}>
                             <Image source={icon_cs} style={{ marginTop: 18, marginStart: 21, width: 20, height: 20, marginEnd: 20, resizeMode: 'contain' }}/>
                             <Text style={{ lineHeight: 54, fontSize: 16, marginEnd: '40%'}}>Customer Service</Text>
                             <Image source={arrow} style={{ marginTop: 14, marginEnd: 19, width: 14, height: 14, marginEnd: 30, resizeMode: 'contain' }}/>
