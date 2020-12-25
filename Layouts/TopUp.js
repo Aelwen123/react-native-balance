@@ -80,10 +80,7 @@ class TopUp extends Component{
                                 delimiter=","
                                 separator="."
                                 precision={0}
-                                keyboardType={'decimal-pad'} 
-                                onChangeText={(formattedValue) => {
-                                    console.log(formattedValue); // $2,310.46
-                                  }}
+                                keyboardType={'decimal-pad'}
                             />
                         </View>
                         <Text style={{ fontSize: 12, marginTop: 10, textAlign: 'right' }}>*min. IDR 10.000</Text>

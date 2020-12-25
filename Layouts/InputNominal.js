@@ -14,8 +14,7 @@ class InputNominal extends Component{
         mycard : [],
         errorbalance : '',
         promo_name : '',
-        promo_discount : '',
-        nominalAfterPromo: this.props.route.params.newNominalAfterPromo
+        promo_discount : this.props.route.params.discount,
     }
     
     onChangeText = (key, val) => {
@@ -43,12 +42,16 @@ class InputNominal extends Component{
         const NominalScreen = () => {
             const [checked, setChecked] = useState('');
             const [allowpayment, setallowpayment] = useState(false)
-            const [nominal, setNominal] = useState(10000);
+            const [nominal, setNominal] = useState(this.props.route.params.nominal);
+            const [nominalAfterPromo, setNominalAfterPromo] = useState(nominal - this.props.route.params.discount)
+            const [discounts, setDiscount] = useState(Number(this.props.route.params.discount))
             const [mycard_number, setMycard_number] = useState('')
             const [mycard_type, setMycard_type] = useState('')
             const [mycard_name, setMycard_name] = useState('')
             const [errorBalance, setErrorbalance] = useState('')
-            const enabled = nominal > 9999 && nominal < 1000001 && !isNaN(nominal) && allowpayment == true && errorBalance == '';
+            const discount = this.props.route.params.minimal < nominal || this.props.route.params.minimal == undefined;
+            const enabled = nominal > 9999 && nominal < 1000001 && !isNaN(nominal) && allowpayment == true && errorBalance == '' && discount;
+            
             return(
                 <View style={ styles.container }>
                     <TouchableOpacity
@@ -82,13 +85,22 @@ class InputNominal extends Component{
                                 delimiter=","
                                 separator="."
                                 precision={0}
-                                keyboardType={'decimal-pad'} 
-                                onChangeText={(formattedValue) => {
-                                    console.log(formattedValue); // $2,310.46
-                                  }}
+                                keyboardType={'decimal-pad'}
                             />
                         </View>
-                        <Text style={{ fontSize: 12, marginTop: 10, textAlign: 'right' }}>*min. IDR 10.000</Text>
+                        <CurrencyInput 
+                                mode='outlined' 
+                                placeholder="Input Nominal" 
+                                style={{ fontSize: 12, marginTop: 10, textAlign: 'right', height: this.props.route.params.minimal != undefined ? 40 : 0 }} 
+                                value={this.props.route.params.minimal} 
+                                onChangeValue= {setNominal}
+                                unit="*min. IDR "
+                                delimiter=","
+                                separator="."
+                                precision={0}
+                                keyboardType={'decimal-pad'}
+                            />
+                        <Text style={{ fontSize: 12, marginTop: 10, textAlign: 'right', height: this.props.route.params.minimal == undefined ? 40 : 0 }}>*min. IDR 10.000</Text>
                         
                     </View>
 
@@ -135,37 +147,105 @@ class InputNominal extends Component{
                         </View>
                         }
                     />
-                    
-                    <TouchableOpacity
-                        style={ styles.containerBox1 }
-                        onPress={() => this.props.navigation.navigate("PromoScreen", {
-                            nominal : this.state.nominal
-                        })}>
-                        <View style={ styles.container2 }>
-                            <View style={ styles.containerText1 }>
-                                <Text style={{ textAlign: 'center' }}>PROMO {"&"} CASHBACK</Text>
-                            </View>
-                        </View>
-                    </TouchableOpacity>
 
-                    <View>
-                        <Text>Total amount before promo : {this.state.nominal}</Text>
-                        <Text>Total amount after promo : {this.state.nominalAfterPromo}</Text>
-                    </View>
-                    
-                    <View style={{ alignItems:'center', marginTop: 84, marginBottom: 0 }}>
+                    <View style={{height:100, display:'flex', flexDirection:'row', borderWidth:1, height:50, width: 350, marginStart:20, borderRadius:10}}>
+                        <TouchableOpacity style={{
+                            width: this.props.route.params.discount != undefined ? '100%' : 0,
+                            justifyContent:'center',
+                            height: this.props.route.params.discount != undefined ? 50 : 0,
+                            opacity: this.props.route.params.discount != undefined ? 50 : 0
+                        }}
+
+                        onPress={() => {
+                            setNominalAfterPromo(undefined)
+                            this.props.route.params.discount = undefined
+                            this.props.route.params.minimal = undefined
+
+                        }}>
+                            <Icon name='onepassword' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
+                        </TouchableOpacity>
 
                         <TouchableOpacity
+                        style={{borderRadius:20, width:this.props.route.params.discount != undefined ? 300 : 350}}
+                            onPress={() => this.props.navigation.navigate("CustomerPromo", {
+                                nominal : nominal
+                            })}>
+                            <View style={{justifyContent:'center'}}>
+                                <View style={ {marginTop: this.props.route.params.discount != undefined ? 14 : 0, height: this.props.route.params.discount != undefined ? 50 : 0, opacity: this.props.route.params.discount != undefined ? 50 : 0} }>
+                                    <Text style={{ textAlign: 'center', textTransform: 'uppercase' }}>{this.props.route.params.promo_name}</Text>
+                                </View>
+
+                                <View style={ {marginTop: this.props.route.params.discount == undefined ? 14 : 0, height: this.props.route.params.discount == undefined ? 50 : 0,} }>
+                                    <Text style={{ textAlign: 'center' }}>PROMO {"&"} CASHBACK</Text>
+                                </View>
+                            </View>
+                        </TouchableOpacity>
+                    </View>
+
+                    <View style={{marginTop:10, height: nominal > 10000 ? 60 : 0, opacity: nominal > 10000 ? 1 : 0}}>
+                        <View style={{borderRadius: 10, marginStart: 20, marginEnd: 20, borderWidth: this.props.route.params.discount != undefined ? 0 : 1, paddingTop:6, height: this.props.route.params.discount != undefined ? 0 : 40, marginBottom: 5}}>
+                            <CurrencyInput 
+                                mode='outlined' 
+                                placeholder="Input Nominal" 
+                                style={{ fontSize: 16, alignSelf:'center' }} 
+                                value={nominal}
+                                unit="Total amount promo: IDR "
+                                delimiter=","
+                                separator="."
+                                precision={0}
+                                keyboardType={'decimal-pad'}
+                                editable={false}
+                            />
+                        </View>
+                        <View style={{borderRadius: 10, marginStart: 20, marginEnd: 20, borderWidth: this.props.route.params.discount != undefined ? 1 : 0, paddingTop:6, height: this.props.route.params.discount != undefined ? 40 : 0}}>
+                        <CurrencyInput
+                                mode='outlined' 
+                                placeholder="You can use a promo if you want to" 
+                                style={{ fontSize: 16, alignSelf:'center' }} 
+                                value={nominal - this.props.route.params.discount}
+                                unit="Total amount promo: IDR "
+                                delimiter=","
+                                separator="."
+                                precision={0}
+                                keyboardType={'decimal-pad'}
+                                editable={false}
+                                onChangeText={(formattedValue) => {
+                                    setNominalAfterPromo(nominal - this.props.route.params.discount)
+                                }}
+                            />
+                        </View>
+                    </View>
+                    
+                    <View style={{ alignItems:'center', marginTop: 30, marginBottom: 0 }}>
+                        <TouchableOpacity
                             disabled={ !enabled }
-                            onPress={() => this.props.navigation.navigate('SecurityPINScreen', {
-                                merchant_id_gajek : this.props.route.params.merchant_id_gajek,
-                                merchant_clover_account : this.props.route.params.merchant_clover_account,
-                                nominal : nominal,
-                                mycard_number : mycard_number,
-                                mycard_type : mycard_type,
-                                mycard_name : mycard_name,
-                                mycard_phonenumber : this.state.mycard_phonenumber
-                            })}
+                            onPress={() => {
+                                if(!isNaN(nominalAfterPromo)){
+                                    this.props.navigation.navigate('SecurityPINScreen', {
+                                        merchant_id_gajek : this.props.route.params.merchant_id_gajek,
+                                        merchant_clover_account : this.props.route.params.merchant_clover_account,
+                                        nominalBeforePromo : nominal,
+                                        nominal : nominalAfterPromo,
+                                        mycard_number : mycard_number,
+                                        mycard_type : mycard_type,
+                                        mycard_name : mycard_name,
+                                        mycard_phonenumber : this.state.mycard_phonenumber,
+                                        payment_promo : this.props.route.params.promo_name
+                                    })
+                                } else if (isNaN(nominalAfterPromo)){
+                                    this.props.navigation.navigate('SecurityPINScreen', {
+                                        merchant_id_gajek : this.props.route.params.merchant_id_gajek,
+                                        merchant_clover_account : this.props.route.params.merchant_clover_account,
+                                        nominalBeforePromo : nominal,
+                                        nominal : nominal,
+                                        mycard_number : mycard_number,
+                                        mycard_type : mycard_type,
+                                        mycard_name : mycard_name,
+                                        mycard_phonenumber : this.state.mycard_phonenumber,
+                                        payment_promo : this.props.route.params.promo_name
+                                    })
+                                }
+                            }}
                             style={[
                                 styles.containerBtnSearch,
                                 { 

@@ -19,36 +19,8 @@ export default class Security extends Component{
     }
 
     componentDidMount(){
-        BackHandler.addEventListener("hardwareBackPress",this.handleBackPress);
         this.currentDate()
         return false;
-    }
-
-    componentWillUnmount() {
-        BackHandler.removeEventListener("hardwareBackPress", this.handleBackPress);
-    }    
-
-    handleBackPress = () => {
-        Alert.alert(
-            "Confirmation",
-            "Are you sure you want to Cancel the Order?",
-            [
-                {
-                    text: "Yes",
-                    onPress: () => {
-                        return this.props.navigation.navigate('Payment');
-                    },
-                },
-                {
-                    text: "No",
-                    onPress: () => {
-                        console.log("Cancel Pressed");
-                    },
-                },
-            ],
-            { cancelable: true }
-        );
-        return true;
     }
 
     onClear = () => {
@@ -63,7 +35,7 @@ export default class Security extends Component{
         var month = new Date().getMonth() + 1;
         var year = new Date().getFullYear();
 
-        this.setState({currentDate : date + '/' + month + '/' + year}, () => console.log(this.state.currentDate))
+        this.setState({currentDate : date + '/' + month + '/' + year})
     }
 
     pay = () => {
@@ -79,16 +51,15 @@ export default class Security extends Component{
                     digitalpayment_securitypin : this.state.securitypin,
                     merchant_id : this.props.route.params.merchant_id_gajek,
                     payment_method : this.props.route.params.mycard_name,
-                    amountBeforePromo : this.props.route.params.nominal,
+                    amountBeforePromo : this.props.route.params.nominalBeforePromo,
                     amountAfterPromo: this.props.route.params.nominal,
                     payment_date: this.state.currentDate,
                     payment_status: true,
-                    payment_promo : "No promo"
+                    payment_promo : this.props.route.params.payment_promo
                 })
             }).then(response => response.json())
             .then(res => {
                 if(res.status == 200){
-                    console.log(res)
                     this.props.navigation.push('TheHome')
                 }
                 else{
@@ -108,16 +79,15 @@ export default class Security extends Component{
                     debitcardpin : this.state.securitypin,
                     receiverAccountNumber : this.props.route.params.merchant_clover_account,
                     payment_method : this.props.route.params.mycard_name,
-                    amountBeforePromo : this.props.route.params.nominal,
+                    amountBeforePromo : this.props.route.params.nominalBeforePromo,
                     amountAfterPromo: this.props.route.params.nominal,
                     payment_date: this.state.currentDate,
                     payment_status: true,
-                    payment_promo : "No promo"
+                    payment_promo : this.props.route.params.payment_promo
                 })
             }).then(response => response.json())
             .then(res => {
                 if(res.status == 200){
-                    console.log(res)
                     this.props.navigation.push('TheHome')
                 }
                 else{

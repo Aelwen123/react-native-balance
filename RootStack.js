@@ -25,9 +25,9 @@ import TopUp from './Layouts/TopUp'
 import SecurityTopUp from './Layouts/SecurityPIN'
 import BuyPromo from './Layouts/BuyPromo'
 import PaidPromo from './Layouts/PaidPromo'
+import CustomerPromo from './Layouts/CustomerPromo'
   
   const Stack = createStackNavigator();
-  
   export default function RootStack() {
     return(
       <NavigationContainer>
@@ -98,6 +98,9 @@ import PaidPromo from './Layouts/PaidPromo'
           <Stack.Screen name="PaidPromo"
                         component={PaidPromo}
                         options={{ headerShown: true, headerTitleAlign: 'center', title: 'Paid Promo', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>
+          <Stack.Screen name="CustomerPromo"
+                        component={CustomerPromo}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Customer Promo', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>
         </Stack.Navigator>
       </NavigationContainer>
     );

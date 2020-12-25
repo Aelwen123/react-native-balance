@@ -1,17 +1,14 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ImageBackground, Image, FlatList } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, Image, FlatList, AsyncStorage } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
 var bg = require("../img/background.png");
-
-import scanQris from '../assets/scanQris.png';
-import findMerchant from '../assets/findMerchant.png';
 
 export default class CustomerPromo extends Component{
     state = {
         promoData : [],
         paidPromoData : [],
-        promo_discount: 0
+        promo_discount: ''
     }
 
     componentDidMount(){
@@ -28,21 +25,30 @@ export default class CustomerPromo extends Component{
     }
 
     getCustomerPromo = async() => {
-        fetch('http://192.168.100.136:3002/promo/customerPromo')
-        .then(response => response.json())
-        .then(res => {
-            this.setState({paidPromoData : res})
+        AsyncStorage.getItem('phonenumber', (err, result) => {
+            fetch('http://192.168.100.136:3002/promo/customerPromo/' + result)
+            .then(response => response.json())
+            .then(res => {
+                this.setState({paidPromoData : res})
+            })
+            .catch(err => {
+                console.log(err)
+            })
+        })
+        
+    }
+
+    usePromo = (discount, minimal, name) => {
+        this.props.navigation.navigate('InputNominalScreen', {
+            promo_name : name,
+            minimal : minimal,
+            discount : discount,
+            nominal : Number(this.props.route.params.nominal)
         })
     }
 
-    usePromo = () => {
-        let nominalAfterPromo = Number(this.props.route.params.nominal) - this.state.promo_discount
-        this.props.navigation.navigate('InputNominalScreen', {
-            newNominalAfterPromo : nominalAfterPromo
-        })    
-    }
-
     render(){
+        
         return(
             <View style={ styles.container }>
                 <ImageBackground style={ styles.styleBackground } source={bg}>
@@ -56,6 +62,7 @@ export default class CustomerPromo extends Component{
                                             <Text style={ styles.styleTextPromo }>{`${item.promo_name}`}</Text>
                                             <Text style={ styles.styleTextPromo }>Discount : {`${item.promo_discount}`}%</Text>
                                             <Text style={ styles.styleTextExpired }>Expired {":"} {`${item.promo_expiredDate}`}</Text>
+                                            
                                         </View>
                                     </View>
                                 </TouchableOpacity>
@@ -68,13 +75,14 @@ export default class CustomerPromo extends Component{
                             keyExtractor={(x, i) => i.toString()}
                             renderItem={({item}) =>
                                 <TouchableOpacity style={ styles.containerPromo} onPress={() => {
-                                    this.setState({promo_discount: `${item.promo_discount}`})
-                                    this.usePromo().bind(this)
+                                    this.setState({promo_discount: Number(`${item.promo_discount}`)})
+                                    this.usePromo(`${item.promo_discount}`, `${item.promo_minimalamount}`, `${item.promo_name}`)
                                 }}>
                                     <View style={ styles.containerPromos }>
                                         <View style={ styles.containerTextPromo }>
                                             <Text style={ styles.styleTextPromo }>{`${item.promo_name}`}</Text>
-                                            <Text style={ styles.styleTextPromo }>Discount : {`${item.promo_discount}`}%</Text>
+                                            <Text style={ styles.styleTextPromo }>Discount : {`${item.promo_discount}`}</Text>
+                                            <Text style={ styles.styleTextPromo }>Minimal amount : {`${item.promo_minimalamount}`}</Text>
                                             <Text style={ styles.styleTextExpired }>Expired {":"} {`${item.promo_expiredDate}`}</Text>
                                         </View>
                                     </View>
@@ -108,7 +116,7 @@ const styles = StyleSheet.create({
     },
     containerMenus: {
         margin: 20,
-        height:550,
+        height:400,
         
     },
 
@@ -134,7 +142,7 @@ const styles = StyleSheet.create({
     },
     styleTextPromo: {
         textAlign: 'left',
-        fontSize: 24,
+        fontSize: 20,
         marginStart: 20,
         fontWeight: 'bold',
         textTransform: 'uppercase'
