@@ -11,8 +11,8 @@ var lg = require("../img/Logo_Balance.png");
 
 export default class SignIn extends React.Component{
         state = {
-            phonenumber: '085347622944', 
-            securitypin: '2580',
+            phonenumber: '', 
+            securitypin: '',
         }
         
         onChangeText = (key, val) => {
@@ -20,7 +20,6 @@ export default class SignIn extends React.Component{
         }
 
         signIn = () => {
-            console.log('haha')
             const { phonenumber, securitypin } = this.state
             fetch('http://192.168.100.136:3002/customer/signin', {
                 method: 'POST',

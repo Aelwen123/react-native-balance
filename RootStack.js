@@ -26,6 +26,7 @@ import SecurityTopUp from './Layouts/SecurityPIN'
 import BuyPromo from './Layouts/BuyPromo'
 import PaidPromo from './Layouts/PaidPromo'
 import CustomerPromo from './Layouts/CustomerPromo'
+import AddMyCard from './Layouts/AddMyCard'
   
   const Stack = createStackNavigator();
   export default function RootStack() {
@@ -73,7 +74,7 @@ import CustomerPromo from './Layouts/CustomerPromo'
                         options={{ headerShown: true, headerTitleAlign: 'center', title: 'Merchant Location' }}/>
           <Stack.Screen name="InputNominalScreen"
                         component={InputNominal}
-                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Find Merchant', headerTransparent: true }}/>
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Input Nominal', headerTransparent: true }}/>
           <Stack.Screen name="SecurityPINScreen"
                         component={SecurityPage}
                         options={{ headerShown: true, headerTitleAlign: 'center', title: 'Security PIN', headerTransparent: true }}/>
@@ -101,6 +102,9 @@ import CustomerPromo from './Layouts/CustomerPromo'
           <Stack.Screen name="CustomerPromo"
                         component={CustomerPromo}
                         options={{ headerShown: true, headerTitleAlign: 'center', title: 'Customer Promo', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>
+          <Stack.Screen name="AddMyCard"
+                        component={AddMyCard}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Add MyCard', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>
         </Stack.Navigator>
       </NavigationContainer>
     );

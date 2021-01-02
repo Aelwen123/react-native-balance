@@ -12,7 +12,7 @@ import { useNavigation } from '@react-navigation/native';
 
 export default class Security extends Component{
     state = {
-        securitypin: '', currentDate: ''
+        securitypin: '', currentDate: '', error:''
     }
     onChangeText = (key, val) => {
         this.setState({ [key]: val })
@@ -63,7 +63,7 @@ export default class Security extends Component{
                     this.props.navigation.push('TheHome')
                 }
                 else{
-                    console.log("Payment failed!")
+                    this.setState({error: "Payment Failed!"})
                 }
             })
         } else {
@@ -91,7 +91,7 @@ export default class Security extends Component{
                     this.props.navigation.push('TheHome')
                 }
                 else{
-                    console.log("Payment failed!")
+                    this.setState({error: "Payment Failed!"})
                 }
             })
         }
@@ -124,8 +124,11 @@ export default class Security extends Component{
                             </TextInput>
                         </View>
                     </View>
-                    <View style={{ position: 'relative', top: 40, marginStart: 24, }}>
+                    <View style={{marginTop: 35}}>
                         <Text style={{ fontSize: 12, textAlign: 'right', marginEnd: 26, }}>*Must be a Number!</Text>
+                    </View>
+                    <View style={{marginTop: 10}}>
+                        <Text style={{ fontSize: 12, textAlign: 'right', marginEnd: 26, color: 'red'}}>{this.state.error}</Text>
                     </View>
                     <View style={{ justifyContent: 'flex-end', flex: 1, marginBottom: 54, marginEnd: 0 }}>
                         <View style={{ alignItems:'center', marginTop: 20, }}>

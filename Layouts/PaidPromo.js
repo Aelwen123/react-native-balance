@@ -55,6 +55,20 @@ export default class PaidPromo extends Component{
                                                     keyboardType={'decimal-pad'}
                                                 />
                                             </View>
+                                            <View style={{display:'flex', flexDirection:'row'}}>
+                                                <Text style={ styles.styleTextPromo }>Minimal: IDR </Text>
+                                                <CurrencyInput 
+                                                    mode='outlined' 
+                                                    placeholder="Input Nominal" 
+                                                    style={{fontSize:24, fontWeight:'bold'}} 
+                                                    value={`${item.promo_minimalamount}`}
+                                                    editable={false}
+                                                    delimiter=","
+                                                    separator="."
+                                                    precision={0}
+                                                    keyboardType={'decimal-pad'}
+                                                />
+                                            </View>
                                             <Text style={ styles.styleTextExpired }>Expired {":"} {`${item.promo_expiredDate}`}</Text>
                                             <Text style={ styles.styleTextExpired }>Price {":"} {`${item.promo_price}`}</Text>
                                         </View>
@@ -101,7 +115,7 @@ const styles = StyleSheet.create({
 
     containerPromos: {
         width: '100%',
-        height: 170,
+        height: 200,
         backgroundColor: '#fff',
         borderColor: 'black',
         borderWidth: 1,

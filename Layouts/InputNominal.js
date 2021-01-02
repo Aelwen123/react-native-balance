@@ -15,6 +15,7 @@ class InputNominal extends Component{
         errorbalance : '',
         promo_name : '',
         promo_discount : this.props.route.params.discount,
+        paymentVia : this.props.route.params.paymentVia
     }
     
     onChangeText = (key, val) => {
@@ -49,7 +50,7 @@ class InputNominal extends Component{
             const [mycard_type, setMycard_type] = useState('')
             const [mycard_name, setMycard_name] = useState('')
             const [errorBalance, setErrorbalance] = useState('')
-            const discount = this.props.route.params.minimal < nominal || this.props.route.params.minimal == undefined;
+            const discount = this.props.route.params.minimal <= nominal || this.props.route.params.minimal == undefined;
             const enabled = nominal > 9999 && nominal < 1000001 && !isNaN(nominal) && allowpayment == true && errorBalance == '' && discount;
             
             return(
@@ -114,10 +115,10 @@ class InputNominal extends Component{
                     style={{marginStart: 20, maxHeight:130}}
                     renderItem={({item}) =>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
-                            <RadioButton value={`${item.mycard_name}`}
-                                status={ checked === `${item.mycard_name}` ? 'checked' : 'unchecked' }
+                            <RadioButton value={`${item.mycard_number}`}
+                                status={ checked === `${item.mycard_number}` ? 'checked' : 'unchecked' }
                                 onPress={() => {
-                                    setChecked(`${item.mycard_name}`)
+                                    setChecked(`${item.mycard_number}`)
                                     setallowpayment(true)
                                     setMycard_number(`${item.mycard_number}`)
                                     setMycard_type(`${item.mycard_type}`)
@@ -127,9 +128,17 @@ class InputNominal extends Component{
                                     } else {
                                         setErrorbalance('')
                                     }
+
+                                    if(this.props.route.params.paymentVia != undefined){
+                                        if(this.props.route.params.paymentVia != `${item.mycard_name}`){
+                                            setErrorbalance('This promo is not for this payment via')
+                                        } else {
+                                            setErrorbalance('')
+                                        }
+                                    }
                                     }} />
                             <View style={{ flexDirection: 'row', marginLeft: 10}}>
-                                <Text style={{fontSize: 16, color: "#000000", textTransform:'uppercase', fontWeight:'bold' }}>{`${item.mycard_name}`} : </Text>
+                                <Text style={{fontSize: 16, color: "#000000", textTransform:'uppercase', fontWeight:'bold' }}>{`${item.mycard_name}`} - {`${item.mycard_number}`} : </Text>
                                 <CurrencyInput 
                                     mode='outlined' 
                                     placeholder="Input Nominal" 
@@ -142,13 +151,15 @@ class InputNominal extends Component{
                                     keyboardType={'decimal-pad'}
                                     editable={false}
                                 />
-                                <Text style={{marginLeft: checked === `${item.mycard_name}` ? 10 : 0, height: checked === `${item.mycard_name}` ? 20 : 0, color: 'red', opacity : errorBalance === '' ? 0 : 1}}>*{errorBalance}</Text>
                             </View>
+                            
                         </View>
                         }
                     />
 
-                    <View style={{height:100, display:'flex', flexDirection:'row', borderWidth:1, height:50, width: 350, marginStart:20, borderRadius:10}}>
+                    <Text style={{marginLeft : 30, color: 'red', opacity : errorBalance === '' ? 0 : 1}}>*{errorBalance}</Text>
+
+                    <View style={{height:100, display:'flex', flexDirection:'row', borderWidth:1, height:50, width: 350, marginStart:20, borderRadius:10, marginTop: 20}}>
                         <TouchableOpacity style={{
                             width: this.props.route.params.discount != undefined ? '100%' : 0,
                             justifyContent:'center',
@@ -160,9 +171,11 @@ class InputNominal extends Component{
                             setNominalAfterPromo(undefined)
                             this.props.route.params.discount = undefined
                             this.props.route.params.minimal = undefined
+                            this.props.route.params.paymentVia = undefined
+                            this.props.route.params.promo_name = '-'
 
                         }}>
-                            <Icon name='onepassword' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
+                            <Icon name='close' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
                         </TouchableOpacity>
 
                         <TouchableOpacity
@@ -220,6 +233,10 @@ class InputNominal extends Component{
                         <TouchableOpacity
                             disabled={ !enabled }
                             onPress={() => {
+                                if(this.props.route.params.promo_name === undefined){
+                                    this.props.route.params.promo_name = '-'
+                                }
+
                                 if(!isNaN(nominalAfterPromo)){
                                     this.props.navigation.navigate('SecurityPINScreen', {
                                         merchant_id_gajek : this.props.route.params.merchant_id_gajek,

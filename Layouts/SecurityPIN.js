@@ -87,11 +87,12 @@ export default class SecurityTopUp extends Component{
             .then(response => response.json())
             .then(res => {
                 if(res.status != 401){
-                    console.log(res)
                     this.props.navigation.push('TheHome')
                 }
                 else{
-                    console.log("Top Up failed!")
+                    Alert.alert(
+                        "Top Up Failed!"
+                    )
                 }
             })
         }

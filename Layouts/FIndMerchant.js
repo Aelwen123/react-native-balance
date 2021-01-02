@@ -10,7 +10,7 @@ var bg = require("../img/background.png");
 
 export default class FindMerchant extends Component{
     state = {
-        merchantName: 'toko', merchantData: [], viewMerchantData : false, errormessage :''
+        merchantName: '', merchantData: [], viewMerchantData : false, errormessage :''
     }
     onChangeText = (key, val) => {
         this.setState({ [key]: val })

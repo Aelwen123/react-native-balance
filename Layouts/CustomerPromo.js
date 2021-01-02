@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, ImageBackground, Image, FlatList, AsyncStorage } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import CurrencyInput from 'react-native-currency-input';
 
 var bg = require("../img/background.png");
 
@@ -38,11 +39,12 @@ export default class CustomerPromo extends Component{
         
     }
 
-    usePromo = (discount, minimal, name) => {
+    usePromo = (discount, minimal, name, paymentVia) => {
         this.props.navigation.navigate('InputNominalScreen', {
             promo_name : name,
             minimal : minimal,
             discount : discount,
+            paymentVia : paymentVia,
             nominal : Number(this.props.route.params.nominal)
         })
     }
@@ -56,24 +58,6 @@ export default class CustomerPromo extends Component{
                         <FlatList data={this.state.promoData}
                             keyExtractor={(x, i) => i.toString()}
                             renderItem={({item}) =>
-                                <TouchableOpacity style={ styles.containerPromo}>
-                                    <View style={ styles.containerPromos }>
-                                        <View style={ styles.containerTextPromo }>
-                                            <Text style={ styles.styleTextPromo }>{`${item.promo_name}`}</Text>
-                                            <Text style={ styles.styleTextPromo }>Discount : {`${item.promo_discount}`}%</Text>
-                                            <Text style={ styles.styleTextExpired }>Expired {":"} {`${item.promo_expiredDate}`}</Text>
-                                            
-                                        </View>
-                                    </View>
-                                </TouchableOpacity>
-                            }
-                        />
-                    </View>
-                    <View style={ styles.containerMenus }>
-                        <Text style={{fontSize:24, fontWeight:'bold'}}>Your Exclusive Promo</Text>
-                        <FlatList data={this.state.paidPromoData}
-                            keyExtractor={(x, i) => i.toString()}
-                            renderItem={({item}) =>
                                 <TouchableOpacity style={ styles.containerPromo} onPress={() => {
                                     this.setState({promo_discount: Number(`${item.promo_discount}`)})
                                     this.usePromo(`${item.promo_discount}`, `${item.promo_minimalamount}`, `${item.promo_name}`)
@@ -81,9 +65,83 @@ export default class CustomerPromo extends Component{
                                     <View style={ styles.containerPromos }>
                                         <View style={ styles.containerTextPromo }>
                                             <Text style={ styles.styleTextPromo }>{`${item.promo_name}`}</Text>
-                                            <Text style={ styles.styleTextPromo }>Discount : {`${item.promo_discount}`}</Text>
-                                            <Text style={ styles.styleTextPromo }>Minimal amount : {`${item.promo_minimalamount}`}</Text>
+                                            <View style={{display:'flex', flexDirection:'row'}}>
+                                                <Text style={ styles.styleTextPromo }>Discount: IDR </Text>
+                                                <CurrencyInput 
+                                                    mode='outlined' 
+                                                    placeholder="Input Nominal" 
+                                                    style={{fontSize:20, fontWeight:'bold'}} 
+                                                    value={`${item.promo_discount}`}
+                                                    editable={false}
+                                                    delimiter=","
+                                                    separator="."
+                                                    precision={0}
+                                                    keyboardType={'decimal-pad'}
+                                                />
+                                            </View>
+                                            <View style={{display:'flex', flexDirection:'row'}}>
+                                                <Text style={ styles.styleTextPromo }>Minimal amount: IDR </Text>
+                                                <CurrencyInput 
+                                                    mode='outlined' 
+                                                    placeholder="Input Nominal" 
+                                                    style={{fontSize:20, fontWeight:'bold'}} 
+                                                    value={`${item.promo_minimalamount}`}
+                                                    editable={false}
+                                                    delimiter=","
+                                                    separator="."
+                                                    precision={0}
+                                                    keyboardType={'decimal-pad'}
+                                                />
+                                            </View>
                                             <Text style={ styles.styleTextExpired }>Expired {":"} {`${item.promo_expiredDate}`}</Text>
+                                            
+                                        </View>
+                                    </View>
+                                </TouchableOpacity>
+                            }
+                        />
+
+                        <Text style={{fontSize:24, fontWeight:'bold', marginTop: 10}}>Your Exclusive Promo</Text>
+                        <FlatList data={this.state.paidPromoData}
+                            keyExtractor={(x, i) => i.toString()}
+                            renderItem={({item}) =>
+                                <TouchableOpacity style={ styles.containerPromo} onPress={() => {
+                                    this.setState({promo_discount: Number(`${item.promo_discount}`)})
+                                    this.usePromo(`${item.promo_discount}`, `${item.promo_minimalamount}`, `${item.promo_name}`, `${item.promo_forPaymentVia}`)
+                                }}>
+                                    <View style={ styles.containerPromos }>
+                                        <View style={ styles.containerTextPromo }>
+                                            <Text style={ styles.styleTextPromo }>{`${item.promo_name}`}</Text>
+                                            <View style={{display:'flex', flexDirection:'row'}}>
+                                                <Text style={ styles.styleTextPromo }>Discount: IDR </Text>
+                                                <CurrencyInput 
+                                                    mode='outlined' 
+                                                    placeholder="Input Nominal" 
+                                                    style={{fontSize:20, fontWeight:'bold'}} 
+                                                    value={`${item.promo_discount}`}
+                                                    editable={false}
+                                                    delimiter=","
+                                                    separator="."
+                                                    precision={0}
+                                                    keyboardType={'decimal-pad'}
+                                                />
+                                            </View>
+                                            <View style={{display:'flex', flexDirection:'row'}}>
+                                                <Text style={ styles.styleTextPromo }>Minimal amount: IDR </Text>
+                                                <CurrencyInput 
+                                                    mode='outlined' 
+                                                    placeholder="Input Nominal" 
+                                                    style={{fontSize:20, fontWeight:'bold'}} 
+                                                    value={`${item.promo_minimalamount}`}
+                                                    editable={false}
+                                                    delimiter=","
+                                                    separator="."
+                                                    precision={0}
+                                                    keyboardType={'decimal-pad'}
+                                                />
+                                            </View>
+                                            <Text style={ styles.styleTextExpired }>Expired {":"} {`${item.promo_expiredDate}`}</Text>
+                                            <Text style={ styles.styleTextExpired }>Payment via {":"} {`${item.promo_forPaymentVia}`}</Text>
                                         </View>
                                     </View>
                                 </TouchableOpacity>
@@ -116,8 +174,8 @@ const styles = StyleSheet.create({
     },
     containerMenus: {
         margin: 20,
-        height:400,
-        
+        height:550,
+        borderRadius: 20,
     },
 
     containerPromo: {
@@ -151,7 +209,8 @@ const styles = StyleSheet.create({
         marginStart: 20,
         marginTop: 8,
         fontSize: 15,
-        fontWeight: '900',
+        fontWeight: 'bold',
+        textTransform: 'uppercase'
     },
 
     containerButtonPay: {

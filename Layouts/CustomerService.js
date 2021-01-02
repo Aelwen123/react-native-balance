@@ -71,7 +71,7 @@ class CustomerService extends Component{
                     <Text style={{ fontSize: 10, marginStart: 0, marginEnd: -90, marginBottom: 10 }}>*Greater than 8 Characters, Must include @, .com</Text>
 
                     <View style={{ flexDirection: 'row', marginStart: -66, marginEnd: -66, }}>
-                        <Icon name='comment-text' size={30} color="#4287f5" style={{ alignItems:'center', justifyContent:'center', paddingTop: 6, paddingStart: 6, marginTop: 16 }}/>
+                        <Icon name='comment-text' size={30} color="#4287f5" style={{ alignItems:'center', paddingTop: 6, paddingStart: 6, marginTop: 16 }}/>
                             <View style={styles.input}>
                                 <TextInput style={styles.textinput} mode='outlined' placeholder="Kind of Complaint" onChangeText={val => this.onChangeText('kindComplaint', val)}>
                                     <Text style={{ marginEnd: 20, overflow: 'hidden', padding: 12 }}>{this.state.kindComplaint}</Text>
@@ -81,7 +81,7 @@ class CustomerService extends Component{
                     <Text style={{ fontSize: 10, marginStart: 138, marginEnd: -76, marginBottom: 10 }}>*Max 5-20 Characters</Text>
 
                     <View style={{ flexDirection: 'row', marginStart: -66, marginEnd: -66, }}>
-                        <Icon name='text' size={30} color="#4287f5" style={{ alignItems:'center', justifyContent:'center', paddingTop: 6, paddingStart: 6, marginTop: 16 }}/>
+                        <Icon name='text' size={30} color="#4287f5" style={{ paddingTop: 6, paddingStart: 6, marginTop: 16 }}/>
                             <View style={styles.input1}>
                                 <TextInput style={styles.textinput1} 
                                     multiline={true} 
@@ -90,7 +90,7 @@ class CustomerService extends Component{
                                     mode='outlined' 
                                     placeholder="Suggestion / Feedback" 
                                     onChangeText={val => this.onChangeText('feedBack', val)} >
-                                    <Text style={{ overflow: 'hidden', padding: 12, justifyContent: 'flex-start', alignItems: 'flex-start', }}>{this.state.feedBack}</Text>
+                                    <Text style={{ overflow: 'hidden', padding: 12 }}>{this.state.feedBack}</Text>
                                 </TextInput>
                             </View>
                     </View>
@@ -171,8 +171,6 @@ const styles = StyleSheet.create({
     },
     textinput:{
         backgroundColor: 'white',
-        justifyContent:'center',
-        alignItems:'center',
         color: '#424242',
         borderRadius: 20,
         marginStart: 10,
@@ -197,8 +195,6 @@ const styles = StyleSheet.create({
         elevation: 5,
     },
     textinput1: {
-        justifyContent:'flex-start',
-        alignItems: 'flex-start',
         display: 'flex',
         backgroundColor: 'white',
         color: '#424242',

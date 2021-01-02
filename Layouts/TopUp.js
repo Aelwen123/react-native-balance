@@ -60,7 +60,7 @@ class TopUp extends Component{
             const [mycard_type, setMycard_type] = useState('')
             const [mycard_name, setMycard_name] = useState('')
             const [errorBalance, setErrorbalance] = useState('')
-            const enabled = nominal > 9999 && nominal < 1000001 && !isNaN(nominal) && allowpaymentDigital == true && allowpaymentBank == true && errorBalance == '';
+            const enabled = nominal >= 20000 && nominal < 1000001 && !isNaN(nominal) && allowpaymentDigital == true && allowpaymentBank == true && errorBalance == '';
             return(
                 <View style={ styles.container }>
                     <View style={{margin:10}}>
@@ -83,7 +83,7 @@ class TopUp extends Component{
                                 keyboardType={'decimal-pad'}
                             />
                         </View>
-                        <Text style={{ fontSize: 12, marginTop: 10, textAlign: 'right' }}>*min. IDR 10.000</Text>
+                        <Text style={{ fontSize: 12, marginTop: 10, textAlign: 'right' }}>*min. IDR 20.000</Text>
                     </View>
                     <View style={{margin:10}}>
                         <Text style={{fontWeight:'500', fontSize:16}}>To Account</Text>
@@ -109,7 +109,7 @@ class TopUp extends Component{
                                     }
                                     }} />
                             <View style={{ flexDirection: 'row', marginLeft: 10}}>
-                                <Text style={{fontSize: 16, color: "#000000", textTransform:'uppercase', fontWeight:'bold' }}>{`${item.mycard_name}`} : </Text>
+                                <Text style={{fontSize: 16, color: "#000000", textTransform:'uppercase', fontWeight:'bold' }}>{`${item.mycard_name}`} - {`${item.mycard_number}`} : </Text>
                                 <CurrencyInput 
                                     mode='outlined' 
                                     placeholder="Input Nominal" 
@@ -137,10 +137,10 @@ class TopUp extends Component{
                     style={{marginStart: 20, maxHeight:130}}
                     renderItem={({item}) =>
                         <View style={{ flexDirection: 'row', alignItems: 'center', marginTop: 10}}>
-                            <RadioButton value={`${item.mycard_name}`}
-                                status={ checked === `${item.mycard_name}` ? 'checked' : 'unchecked' }
+                            <RadioButton value={`${item.mycard_number}`}
+                                status={ checked === `${item.mycard_number}` ? 'checked' : 'unchecked' }
                                 onPress={() => {
-                                    setChecked(`${item.mycard_name}`)
+                                    setChecked(`${item.mycard_number}`)
                                     setallowpaymentBank(true)
                                     setSourceMycard_number(`${item.mycard_number}`)
                                     setSourceMycard_type(`${item.mycard_type}`)
@@ -152,7 +152,7 @@ class TopUp extends Component{
                                     }
                                     }} />
                             <View style={{ flexDirection: 'row', marginLeft: 10}}>
-                                <Text style={{fontSize: 16, color: "#000000", textTransform:'uppercase', fontWeight:'bold' }}>{`${item.mycard_name}`} : </Text>
+                                <Text style={{fontSize: 16, color: "#000000", textTransform:'uppercase', fontWeight:'bold' }}>{`${item.mycard_name}`} - {`${item.mycard_number}`} : </Text>
                                 <CurrencyInput 
                                     mode='outlined' 
                                     placeholder="Input Nominal" 
@@ -165,7 +165,7 @@ class TopUp extends Component{
                                     keyboardType={'decimal-pad'}
                                     editable={false}
                                 />
-                                <Text style={{marginLeft: checked === `${item.mycard_name}` ? 10 : 0, height: checked === `${item.mycard_name}` ? 20 : 0, color: 'red', opacity : errorBalance === '' ? 0 : 1}}>*{errorBalance}</Text>
+                                <Text style={{marginLeft: checked === `${item.mycard_number}` ? 10 : 0, height: checked === `${item.mycard_number}` ? 20 : 0, color: 'red', opacity : errorBalance === '' ? 0 : 1}}>*{errorBalance}</Text>
                             </View>
                         </View>
                         }

@@ -1,6 +1,7 @@
 import React, { Component } from 'react';
 import { View, Text, StyleSheet, ImageBackground, Image, FlatList } from 'react-native';
 import { TouchableOpacity } from 'react-native-gesture-handler';
+import CurrencyInput from 'react-native-currency-input';
 
 var bg = require("../img/background.png");
 
@@ -9,13 +10,11 @@ import findMerchant from '../assets/findMerchant.png';
 
 export default class Promo extends Component{
     state = {
-        promoData : [],
-        paidPromoData : []
+        promoData : []
     }
 
     componentDidMount(){
         this.getPromo()
-        this.getPaidPromo()
     }
 
     getPromo = async() => {
@@ -23,14 +22,6 @@ export default class Promo extends Component{
         .then(response => response.json())
         .then(res => {
             this.setState({promoData : res})
-        })
-    }
-
-    getPaidPromo = async() => {
-        fetch('http://192.168.100.136:3002/promo/paid')
-        .then(response => response.json())
-        .then(res => {
-            this.setState({paidPromoData : res})
         })
     }
 
@@ -47,7 +38,34 @@ export default class Promo extends Component{
                                     <View style={ styles.containerPromos }>
                                         <View style={ styles.containerTextPromo }>
                                             <Text style={ styles.styleTextPromo }>{`${item.promo_name}`}</Text>
-                                            <Text style={ styles.styleTextPromo }>Discount : {`${item.promo_discount}`}%</Text>
+                                            <View style={{display:'flex', flexDirection:'row'}}>
+                                                <Text style={ styles.styleTextPromo }>Discount: IDR </Text>
+                                                <CurrencyInput 
+                                                    mode='outlined' 
+                                                    placeholder="Input Nominal" 
+                                                    style={{fontSize:20, fontWeight:'bold'}} 
+                                                    value={`${item.promo_discount}`}
+                                                    editable={false}
+                                                    delimiter=","
+                                                    separator="."
+                                                    precision={0}
+                                                    keyboardType={'decimal-pad'}
+                                                />
+                                            </View>
+                                            <View style={{display:'flex', flexDirection:'row'}}>
+                                                <Text style={ styles.styleTextPromo }>Minimal amount: IDR </Text>
+                                                <CurrencyInput 
+                                                    mode='outlined' 
+                                                    placeholder="Input Nominal" 
+                                                    style={{fontSize:20, fontWeight:'bold'}} 
+                                                    value={`${item.promo_minimalamount}`}
+                                                    editable={false}
+                                                    delimiter=","
+                                                    separator="."
+                                                    precision={0}
+                                                    keyboardType={'decimal-pad'}
+                                                />
+                                            </View>
                                             <Text style={ styles.styleTextExpired }>Expired {":"} {`${item.promo_expiredDate}`}</Text>
                                         </View>
                                     </View>
@@ -107,7 +125,7 @@ const styles = StyleSheet.create({
     },
     styleTextPromo: {
         textAlign: 'left',
-        fontSize: 24,
+        fontSize: 20,
         marginStart: 20,
         fontWeight: 'bold',
         textTransform: 'uppercase'

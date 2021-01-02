@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-import { View, Text, StyleSheet, ImageBackground } from 'react-native';
+import { View, Text, StyleSheet, ImageBackground, FlatList } from 'react-native';
 // import Accordian from '../Layouts/Components/FAQ';
 import background from '../assets/background.png';
 import { ScrollView, TouchableOpacity } from 'react-native-gesture-handler';
@@ -10,24 +10,24 @@ export default class FAQList extends Component{
         this.state = {
             menu :[
                 {
-                    title: 'Apa bedanya dengan Digital Payment \nyang sudah ada saat ini ?',
+                    title: 'Apa bedanya dengan Digital Payment yang sudah ada saat ini ?',
                     data: 'Lorem Ipsum Bla Bla Bla Lorem Ipsum Bla Bla \nBla Lorem Ipsum Bla Bla Bla Lorem Ipsum \nBla Bla Bla',
                 },
                 {
-                    title: 'Kenapa saya harus menggunakan \nBalance Fintech ?',
+                    title: 'Kenapa saya harus menggunakan Balance Fintech ?',
                     data: 'Lorem Ipsum Bla Bla Bla Lorem Ipsum Bla Bla \nBla Lorem Ipsum Bla Bla Bla Lorem Ipsum \nBla Bla Bla'
                 },
                 {
-                    title: 'Lorem Ipsum Bla Bla Lorem Lorem Ipsum \nBla Bla Lorem ?',
-                    data: 'Lorem Ipsum Bla Bla Bla Lorem Ipsum Bla Bla \nBla Lorem Ipsum Bla Bla Bla Lorem Ipsum \nBla Bla Bla'
+                    title: 'Lorem Ipsum Bla Bla Lorem Lorem Ipsum Bla Bla Lorem ?',
+                    data: 'Lorem Ipsum Bla Bla Bla Lorem Ipsum Bla Bla Bla Lorem Ipsum Bla Bla Bla Lorem Ipsum \nBla Bla Bla'
                 },
                 {
-                    title: 'Lorem Ipsum Bla Bla Lorem Lorem Ipsum \nBla Bla Lorem ?',
-                    data: 'Lorem Ipsum Bla Bla Bla Lorem Ipsum Bla Bla \nBla Lorem Ipsum Bla Bla Bla Lorem Ipsum \nBla Bla Bla'
+                    title: 'Lorem Ipsum Bla Bla Lorem Lorem Ipsum Bla Bla Lorem ?',
+                    data: 'Lorem Ipsum Bla Bla Bla Lorem Ipsum Bla Bla Bla Lorem Ipsum Bla Bla Bla Lorem Ipsum \nBla Bla Bla'
                 },
                 {
-                    title: 'Lorem Ipsum Bla Bla Lorem Lorem Ipsum \nBla Bla Lorem ?',
-                    data: 'Lorem Ipsum Bla Bla Bla Lorem Ipsum Bla Bla \nBla Lorem Ipsum Bla Bla Bla Lorem Ipsum \nBla Bla Bla'
+                    title: 'Lorem Ipsum Bla Bla Lorem Lorem Ipsum Bla Bla Lorem ?',
+                    data: 'Lorem Ipsum Bla Bla Bla Lorem Ipsum Bla Bla Bla Lorem Ipsum Bla Bla Bla Lorem Ipsum \nBla Bla Bla'
                 },
             ]
         }
@@ -38,12 +38,7 @@ export default class FAQList extends Component{
             <View>
                 <View>
                     <ImageBackground source={ background } style={ styles.containerImgBg }>
-                        
-                        <ScrollView
-                            showsVerticalScrollIndicator={true}
-                            scrollEventThrottle={14}
-                            style={{ overflow: 'hidden', marginTop: 80, marginBottom: 0, }}>
-                        
+                        <View style={{ overflow: 'hidden', marginTop: 30, marginBottom: 0, }}>
                             <View style={ styles.contentJudul }>
                                 <Text style={styles.styleContentJudul }>
                                     Temukan Informasi yang {"\n"}anda butuhkan seputar {"\n"}Balance Fintech
@@ -58,10 +53,19 @@ export default class FAQList extends Component{
                             </View>
 
                             <View style={ styles.containerSubPertanyaan }>
-                                { this.renderFaqAccordions() }
+                            <FlatList data={this.state.menu}
+                                style={{maxHeight: 380, width: 400, padding: 10}}
+                                keyExtractor={(x, i) => i.toString()}
+                                renderItem={({item}) =>
+                                    <View style={{margin : 10}}>
+                                        <Text style={{fontSize: 17, fontWeight: 'bold'}}>{`${item.title}`}</Text>
+                                        <Text style={{marginTop: 5}}>{`${item.data}`}</Text>
+                                    </View>
+                                }
+                            />
                             </View>
 
-                        </ScrollView>
+                        </View>
 
                     </ImageBackground>
                 </View>
@@ -93,7 +97,7 @@ const styles = StyleSheet.create({
         justifyContent: 'center',
         alignItems: 'center',
         marginTop: 100,
-        marginBottom: 80,
+        marginBottom: 30,
         overflow: 'hidden',
     },
     styleContentJudul: {
@@ -104,8 +108,7 @@ const styles = StyleSheet.create({
     containerPertanyaan: {
         backgroundColor: '#F2F2F2',
         width: '100%',
-        marginTop: 50,
-        height: 64,
+        marginTop: 30,
     },
     styleTextContainerPertanyaan: {
         paddingStart: 8,

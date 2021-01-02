@@ -16,7 +16,8 @@ class BuyPromo extends Component{
         promo_discount : '',
         promo_expiredDate : '',
         promo_forPaymentVia : '',
-        promo_price : ''
+        promo_price : '',
+        promo_minimalamount : ''
     }
     
     onChangeText = (key, val) => {
@@ -47,6 +48,7 @@ class BuyPromo extends Component{
             this.setState({promo_expiredDate : res.promo_expiredDate})
             this.setState({promo_price : res.promo_price})
             this.setState({promo_forPaymentVia : res.promo_forPaymentVia})
+            this.setState({promo_minimalamount: res.promo_minimalamount})
         })
     }
 
@@ -66,7 +68,7 @@ class BuyPromo extends Component{
             .then(response => response.json())
             .then(res => {
                 if(res.status == 200){
-                    console.log(res)
+                    this.props.navigation.push('TheHome')
                 } else {
                     console.log(res)
                 }
@@ -97,6 +99,7 @@ class BuyPromo extends Component{
                                 <Text style={ styles.merchant }>{this.state.promo_name}</Text>
                                 <Text style={ styles.merchant }>Price: {this.state.promo_price}</Text>
                                 <Text style={ styles.addr }>Discount: {this.state.promo_discount}</Text>
+                                <Text style={ styles.addr }>Minimal: {this.state.promo_minimalamount}</Text>
                                 <Text style={ styles.addr }>Expired Date: {this.state.promo_expiredDate}</Text>
                                 <Text style={ styles.addr }>Payment Via: {this.state.promo_forPaymentVia}</Text>
                             </View>

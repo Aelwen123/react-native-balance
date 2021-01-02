@@ -3,6 +3,7 @@ import { Content, Header } from 'native-base';
 import React, { Component } from 'react';
 import { FlatList, StyleSheet, Text, View, SafeAreaView, Image, TouchableWithoutFeedback, Button, ImageBackground, TouchableOpacity, AsyncStorage } from 'react-native';
 import { TouchableRipple } from 'react-native-paper';
+import CurrencyInput from 'react-native-currency-input';
 
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
@@ -69,12 +70,13 @@ class Home extends Component{
       .then(response => response.json())
       .then(res => {
         res.forEach(item => {
-          if(item.mycard_name == "clover"){
-            fetch("http://192.168.100.136:3002/mycard/update/bank/clover/" + item.mycard_number)
-          }
-          else if (item.mycard_name == "gajek"){
-            fetch("http://192.168.100.136:3002/mycard/update/digitalpayment/gajek/" + item.mycard_number)
-          }
+          fetch("http://192.168.100.136:3002/mycard/update/"+ item.mycard_type + "/" + item.mycard_name + "/" + item.mycard_number)
+          // if(item.mycard_name == "clover"){
+          //   fetch("http://192.168.100.136:3002/mycard/update/bank/clover/" + item.mycard_number)
+          // }
+          // else if (item.mycard_name == "gajek"){
+          //   fetch("http://192.168.100.136:3002/mycard/update/digitalpayment/gajek/" + item.mycard_number)
+          // }
         })
         this.getCardData()
       }).catch(err => {
@@ -107,7 +109,7 @@ class Home extends Component{
                           onPress={() => this.props.navigation.navigate('NotificationScreen', {
                             user_phonenumber: this.state.phonenumber
                           })}>
-                          <Icon name="bell-outline" size={20} style={{ color: colors.white }}/>           
+                          <Icon name="inbox" size={30} style={{ color: colors.white }}/>           
                       </TouchableOpacity>
                     </View>
                 </View>
@@ -115,16 +117,22 @@ class Home extends Component{
                     <Avatar.Image source={ProfilePicture} size={44} style={{backgroundColor:'white'}}/>
                     <View>
                       <Text style={{color:'white', fontSize:20, fontWeight:'bold', marginStart: 18, flexDirection: 'column'}}>{this.state.user_name}</Text>
-                      <Text style={{color:'white', marginStart: 18 }}>{this.state.user_email}</Text>
+                      <Text style={{color:'white', marginStart: 18, fontWeight:'bold' }}>{this.state.user_email}</Text>
                       <Text style={{color:'white', marginStart: 18, fontWeight: 'bold' }}>Your Point : {this.state.point}</Text>
                     </View>
                 </View>
                 
                 <View style={ styles.main }>
-                  <Text style={{color:'white', fontSize:16, fontWeight:'200', marginStart: 10, marginTop: 20}}>My cards</Text>
-
+                  <View style={{flex:1, flexDirection: 'row', justifyContent:'space-between', marginRight: 10}}>
+                    <Text style={{color:'white', fontSize:16, fontWeight:'bold', marginStart: 10, marginTop: 20}}>My cards</Text>
+                    <TouchableOpacity onPress={() => this.props.navigation.push('AddMyCard')}>
+                      <View style={{flex:1, flexDirection:'row'}}>
+                        <Icon name='plus' size={30} color="white" style={{marginTop:15, fontWeight:'bold'}}/>
+                        <Text style={{color:'white', fontSize:16, fontWeight:'bold', marginStart: 10, marginTop: 20}}>Add My Card</Text>
+                      </View>
+                    </TouchableOpacity>
+                  </View>
                   
-
                   <View style={{ paddingBottom: 2 }}>
                   <FlatList data={this.state.mycard}
                     horizontal={true}
@@ -135,7 +143,6 @@ class Home extends Component{
                         source_mycard_type : `${item.mycard_type}`,
                         source_mycard_name : `${item.mycard_name}`,
                         source_mycard_balance : `${item.mycard_balance}`
-
                       })}>
                         <View style={styles.card}>
                           <View style={styles.cardImage}>
@@ -144,15 +151,26 @@ class Home extends Component{
                                 <View style={{flexDirection:'row'}}>
                                   <View>
                                     <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:16, textAlign: 'left', alignContent: 'center', marginStart: 30, marginTop: 60, letterSpacing: 1.2 }}>{`${item.mycard_name}`.toUpperCase()}</Text>
+                                    <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:16, textAlign: 'left', alignContent: 'center', marginStart: 30, letterSpacing: 1.2 }}>{`${item.mycard_number}`.toUpperCase()}</Text>
                                   </View>
                                     <View style={ styles.containerTopUpText }>
-                                      <Text style={{ color:'#466FFF', fontSize:16, fontWeight:'200', marginTop: 0, textAlign: 'center', fontWeight:'bold' }}>{"+"} Top Up</Text>
+                                      <Text style={{ color:'#466FFF', fontSize:16, fontWeight:'200', marginTop: 0, textAlign: 'center', fontWeight:'bold', marginTop: 30, marginStart: 100, opacity: `${item.mycard_type}` === 'bank' ? 0 : 1 }}>{"+"} Top Up</Text>
                                     </View>
                                 </View>
                                
                                   <View style={{ flexDirection: 'row'}}>
                                     <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:18, textAlign: 'left', alignContent: 'center', marginStart: 30, marginTop: 20, }}>IDR </Text>
-                                    <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:30, textAlign: 'left', alignContent: 'center', marginStart: 5, marginTop: 16, letterSpacing: 1}}>{`${item.mycard_balance}`}</Text>
+                                    <CurrencyInput 
+                                        mode='outlined' 
+                                        placeholder="Input Nominal" 
+                                        style={{ color:'#466FFF', fontWeight:'bold', fontSize:30, textAlign: 'left', alignContent: 'center', marginStart: 5, marginTop: 16, letterSpacing: 1}} 
+                                        value={`${item.mycard_balance}`}
+                                        delimiter=","
+                                        separator="."
+                                        precision={0}
+                                        keyboardType={'decimal-pad'}
+                                        editable={false}
+                                    />
                                   </View>
                                 </View>
                               </View>
@@ -161,7 +179,7 @@ class Home extends Component{
                     }
                   />
 
-                      <Text style={{color:'white', fontSize:16, fontWeight:'200', marginStart: 10, marginTop: 14}}>Promo {"&"} Cashback</Text>
+                      <Text style={{color:'white', fontSize:16, fontWeight:'bold', marginStart: 10, marginTop: 14}}>Promo {"&"} Cashback</Text>
                       <TouchableOpacity activeOpacity={0.85} onPress={() => this.props.navigation.navigate('PromoScreen')}>
                         <View style={ styles.square }>
                             <View style={{  alignItems: 'center', margin: 33 }}>
