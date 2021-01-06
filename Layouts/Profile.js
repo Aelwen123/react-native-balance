@@ -96,8 +96,18 @@ export default class Profile extends Component{
                             <Image source={icon_edit_profile} style={ styles.styleImageEditProfile }/>
                             <Text style={ styles.styleTextEditProfile }>Edit Profile</Text>
                             <Image source={arrow} style={{ marginTop: 14, marginEnd: 20, width: 14, height: 14, marginEnd: 30, resizeMode: 'contain' }}/>
-                        </TouchableOpacity>
+                    </TouchableOpacity>
                     </View>
+
+                    <View style={ styles.containerAccount }>
+                    <TouchableOpacity style={ styles.styleButtonEditProfile }
+                            onPress={() => this.props.navigation.navigate('SignInMerchant')}>
+                            <Image source={icon_edit_profile} style={ styles.styleImageEditProfile }/>
+                            <Text style={ styles.styleTextEditProfile }>Sign In Merchant</Text>
+                            <Image source={arrow} style={{ marginTop: 14, marginEnd: 20, width: 14, height: 14, marginEnd: 30, resizeMode: 'contain' }}/>
+                    </TouchableOpacity>
+                    </View>
+                    
                 </View>         
 
                 <View style={ styles.containerProfileMenuOtherInfo }>
@@ -173,7 +183,7 @@ const styles = StyleSheet.create({
     containerProfileMenuAccount: {
         backgroundColor: 'white',
         width: '100%',
-        height: 124,
+        height: 200,
     },
     styleMenuAccount: {
         marginStart: 24, 

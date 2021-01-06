@@ -55,6 +55,7 @@ export default class SelectMerchantLocation extends Component{
                                     <TouchableOpacity
                                         style={ styles.containerBox }
                                         onPress={() => this.props.navigation.navigate("InputNominalScreen", {
+                                            merchant_id : `${item._id}`,
                                             merchant_name: `${item.merchant_name}`,
                                             merchant_location : `${item.merchant_location}`,
                                             merchant_address : this.state.address,

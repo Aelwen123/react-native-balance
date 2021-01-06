@@ -142,7 +142,8 @@ class Home extends Component{
                       <TouchableOpacity activeOpacity={0.95} style={{backgroundColor:'#ffffff0', borderRadius:20, marginStart: 8, }} onPress={() => this.props.navigation.push('TopUpScreen', {
                         source_mycard_type : `${item.mycard_type}`,
                         source_mycard_name : `${item.mycard_name}`,
-                        source_mycard_balance : `${item.mycard_balance}`
+                        source_mycard_balance : `${item.mycard_balance}`,
+                        mycard_id : `${item._id}`
                       })}>
                         <View style={styles.card}>
                           <View style={styles.cardImage}>

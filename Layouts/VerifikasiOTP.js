@@ -82,6 +82,7 @@ export default class VerifikasiOTP extends Component{
                 <View style={ styles.containerTextInput }>
                     <TextInput 
                         ref={"pin1ref"}
+                        keyboardType='number-pad'
                         onChangeText={(pin1) => {
                             this.setState({ pin1: pin1 })
 
@@ -95,6 +96,7 @@ export default class VerifikasiOTP extends Component{
 
                     <TextInput 
                         ref={"pin2ref"}
+                        keyboardType='number-pad'
                         onChangeText={(pin2) => {
                             this.setState({ pin2: pin2 })
 
@@ -108,6 +110,7 @@ export default class VerifikasiOTP extends Component{
 
                     <TextInput 
                         ref={"pin3ref"}
+                        keyboardType='number-pad'
                         onChangeText={(pin3) => {
                             this.setState({ pin3: pin3 })
 
@@ -121,6 +124,7 @@ export default class VerifikasiOTP extends Component{
 
                     <TextInput 
                         ref={"pin4ref"}
+                        keyboardType='number-pad'
                         onChangeText={(pin4) => {
                             this.setState({ pin4: pin4 })
 

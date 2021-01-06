@@ -27,6 +27,10 @@ import BuyPromo from './Layouts/BuyPromo'
 import PaidPromo from './Layouts/PaidPromo'
 import CustomerPromo from './Layouts/CustomerPromo'
 import AddMyCard from './Layouts/AddMyCard'
+import SignInMerchant from './Layouts/SignInMerchant'
+import SignUpMerchant from './Layouts/SignUpMerchant'
+import HomeMerchant from './Layouts/HomeMerchant'
+import HistoryMerchant from './Layouts/HistoryMerchant'
   
   const Stack = createStackNavigator();
   export default function RootStack() {
@@ -105,6 +109,18 @@ import AddMyCard from './Layouts/AddMyCard'
           <Stack.Screen name="AddMyCard"
                         component={AddMyCard}
                         options={{ headerShown: true, headerTitleAlign: 'center', title: 'Add MyCard', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>
+          <Stack.Screen name="SignInMerchant"
+                        component={SignInMerchant}
+                        options={{ headerShown: false, headerTitleAlign: 'center', title: 'Sign In Merchant', headerTransparent: true, headerTitleStyle: { color: 'black' } }}/>
+          <Stack.Screen name="SignUpMerchant"
+                        component={SignUpMerchant}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Sign Up Merchant', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>
+          <Stack.Screen name="HomeMerchant"
+                        component={HomeMerchant}
+                        options={{ headerShown: false, headerTitleAlign: 'center', title: 'Merchant Home', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>              
+          <Stack.Screen name="HistoryMerchant"
+                        component={HistoryMerchant}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'History Merchant', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>
         </Stack.Navigator>
       </NavigationContainer>
     );

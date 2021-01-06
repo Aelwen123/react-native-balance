@@ -47,6 +47,7 @@ export default class Security extends Component{
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
+                    merchant_id_balance : this.props.route.params.merchant_id,
                     user_phonenumber : this.props.route.params.mycard_number,
                     digitalpayment_securitypin : this.state.securitypin,
                     merchant_id : this.props.route.params.merchant_id_gajek,
@@ -74,6 +75,7 @@ export default class Security extends Component{
                     'Content-Type': 'application/json'
                 },
                 body: JSON.stringify({
+                    merchant_id_balance : this.props.route.params.merchant_id,
                     user_phonenumber : this.props.route.params.mycard_phonenumber,
                     senderAccountNumber : this.props.route.params.mycard_number,
                     debitcardpin : this.state.securitypin,

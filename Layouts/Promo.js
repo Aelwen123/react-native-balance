@@ -80,7 +80,7 @@ export default class Promo extends Component{
                                 styles.containerButtonPay,{ 
                                     backgroundColor: '#4263D5', 
                                 }]}>
-                                <Text style={styles.styleTextPay}>Paid Promo</Text>
+                                <Text style={styles.styleTextPay}>Buy Promo</Text>
                         </TouchableOpacity>
                     </View>
                 </ImageBackground>

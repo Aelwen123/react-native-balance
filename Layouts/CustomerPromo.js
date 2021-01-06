@@ -36,7 +36,6 @@ export default class CustomerPromo extends Component{
                 console.log(err)
             })
         })
-        
     }
 
     usePromo = (discount, minimal, name, paymentVia) => {

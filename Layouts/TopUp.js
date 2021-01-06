@@ -1,6 +1,7 @@
 import { CheckBox, Radio } from 'native-base';
 import React, { Component, useEffect, useState } from 'react';
-import { View, Text, StyleSheet, TextInput, AsyncStorage } from 'react-native';
+import Modal from 'react-native-modal';
+import { View, Text, StyleSheet, TextInput, AsyncStorage, Button, Alert } from 'react-native';
 import { ScrollView, TouchableOpacity, FlatList } from 'react-native-gesture-handler';
 import { RadioButton } from 'react-native-paper';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
@@ -13,7 +14,10 @@ class TopUp extends Component{
         mycard_type : '',
         mycard_digitalpayment : [],
         mycard_bank : [],
-        errorbalance : ''
+        errorbalance : '',
+        isModalDeleteVisible: false,
+        delete:'',
+        mycard_id: this.props.route.params.mycard_id
     }
     
     onChangeText = (key, val) => {
@@ -43,6 +47,21 @@ class TopUp extends Component{
             }).catch(err => {
                 console.log(err)
             })
+        })
+    }
+
+    deleteCard = () => {
+        fetch('http://192.168.100.136:3002/mycard/deletecard/' + this.state.mycard_id)
+        .then(response => response.json())
+        .then(res => {
+            if(res.status === 401){
+                Alert.alert(
+                    "Delete Failed!"
+                )
+            }
+            else {
+                this.props.navigation.push('TheHome')
+            }
         })
     }
     
@@ -190,6 +209,14 @@ class TopUp extends Component{
                             <Text style={{ textAlign: 'center', fontSize: 20, lineHeight: 43, color: '#ffffff', fontSize: 18 }}>NEXT</Text>
                         </TouchableOpacity>
                     </View>
+
+                    <View style={{ alignItems:'center', marginTop: 10, marginBottom: 0 }}>
+                        <TouchableOpacity
+                            onPress={this.deleteCard.bind(this)}
+                            style={[styles.containerBtnSearch,{ backgroundColor: 'red' }]}>
+                            <Text style={{ textAlign: 'center', fontSize: 20, lineHeight: 43, color: '#ffffff', fontSize: 18 }}>Delete Card</Text>
+                        </TouchableOpacity>
+                    </View>
             </View>
             );
         }
@@ -221,6 +248,16 @@ const styles = StyleSheet.create({
         marginTop: 90,
         marginEnd: 20,
         height: 165,
+    },
+    textinput:{
+        flex: 1,
+        paddingLeft: 10,
+        backgroundColor: 'white',
+        color: '#424242',
+        alignItems:'center',
+        justifyContent:'center',
+        borderRadius: 20,
+        marginEnd: 20,
     },
     containerBox1: {
         backgroundColor: '#4287f5',
@@ -284,23 +321,20 @@ const styles = StyleSheet.create({
         width: 200,
         flex: 1,
     },
-    
     input: {
-        shadowOffset:{width: 0, height: 2},
+        width: 280,
+        height: 50,
         backgroundColor: 'white',
-        flexDirection: 'row',
-        shadowOpacity: 0.25,
-        shadowColor:'black',
-        shadowRadius: 3.84,
-        fontWeight: '500',
+        margin: 20,
         color: '#90dae1',
         borderRadius: 20,
         fontSize: 18,
-        elevation: 5,
-        width: 310,
-        height: 55,
-        margin: 10,
-        flex: 1,
+        fontWeight: '500',
+        shadowColor:'black',
+        shadowOffset:{width: 0, height: 2},
+        shadowOpacity: 0.25,
+        shadowRadius: 3.84,
+        elevation: 5
     },
     textinput:{
         backgroundColor: 'white',

@@ -28,8 +28,8 @@ class SignUp extends Component{
         body: JSON.stringify({
             user_name : name,
             user_email : email,
-            user_securitypin : securitypin,
-            user_phonenumber : phonenumber
+            user_pin : securitypin,
+            user_phonenumber : phonenumber,
         })
       })
       .then(response => response.json())
@@ -38,7 +38,7 @@ class SignUp extends Component{
               this.props.navigation.navigate('SignIn')
           } else {
               Alert.alert(
-                  "Sign up failed!"
+                  "Registration failed!"
               )
           }
       })
@@ -50,101 +50,102 @@ class SignUp extends Component{
   
 render(){
     const { name, phonenumber, email, securitypin } = this.state;
-    
     return(
       <View style={styles.container}>
-          <View>
-              <Text style={ styles.containerJudul }>
-                  Terima kasih telah bergabung bersama kami :) {'\n'}Kami akan mengirimkan 
-                  <Text style={{ fontWeight: 'bold' }}> Kode OTP</Text> melalui 
-                  <Text style={{ fontWeight: 'bold' }}> Email </Text> 
-                  untuk proses verifikasi
-              </Text>
-          </View>
+            <View>
+                <Text style={ styles.containerJudul }>
+                    Terima kasih telah bergabung bersama kami :) {'\n'}Kami akan mengirimkan 
+                    <Text style={{ fontWeight: 'bold' }}> Kode OTP</Text> melalui 
+                    <Text style={{ fontWeight: 'bold' }}> Email </Text> 
+                    untuk proses verifikasi
+                </Text>
+            </View>
 
           <View style={styles.form}>
 
-              <View style={[ styles.input, this.state.name.length > 5 && this.state.name.length < 16 ? styles.noterror : styles.error ]}>
-                  <Icon name='account-plus' size={30} color="#4287f5" style={{ alignItems:'center', justifyContent:'center', padding:12 }}/>
-                      <TextInput 
-                          ref={"name"}
-                          style={ styles.textinput } 
-                          mode='outlined' 
-                          placeholder="Name" 
-                          onSubmitEditing={() => { this.phonenumber.focus(); }}
-                          onChangeText={val => this.onChangeText('name', val)}>
-                          <Text>{this.state.name}</Text>
-                      </TextInput>
+            <View style={[ styles.input, this.state.name.length > 5 && this.state.name.length < 16 ? styles.noterror : styles.error ]}>
+                <Icon name='account-plus' size={30} color="#4287f5" style={{ alignItems:'center', justifyContent:'center', padding:12 }}/>
+                    <TextInput 
+                        ref={"name"}
+                        style={ styles.textinput } 
+                        mode='outlined' 
+                        placeholder="Name" 
+                        onSubmitEditing={() => { this.phonenumber.focus(); }}
+                        onChangeText={val => this.onChangeText('name', val)}>
+                        <Text>{this.state.name}</Text>
+                    </TextInput>
               </View>
-              <Text style={{ fontSize: 10, marginStart: 150, marginEnd: -60, marginBottom: 10 }}>*Max 5-16 Characters</Text>
 
-              <View style={[ styles.input, this.state.phonenumber.length > 8 && this.state.phonenumber.length < 13 && !isNaN(phonenumber) && this.state.phonenumber.substr(0,1) != '8' ? styles.noterror : styles.error ]}>
-                  <Icon name='phone' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
-                      <TextInput 
-                          ref={(phonenumber) => { this.phonenumber = phonenumber; }}
-                          style={styles.textinput} 
-                          mode='outlined' 
-                          placeholder="Phone number" 
-                          onSubmitEditing={() => { this.email.focus(); }}
-                          onChangeText={val => this.onChangeText('phonenumber', val)}>
-                          <Text>{this.state.phonenumber}</Text>
-                      </TextInput>
-              </View>
-              <Text style={{ fontSize: 10, marginStart: 10, marginEnd: -60, marginBottom: 10 }}>*Between 8-13 digits, Start with 0 {"&"} Must be a Number</Text>
+            <Text style={{ fontSize: 10, marginStart: 150, marginEnd: -60, marginBottom: 10 }}>*Max 5-16 Characters</Text>
 
-              <View style={[ styles.input, this.state.email.length > 8 && this.state.email.includes('@') && this.state.email.includes('.com') ? styles.noterror : styles.error ]}>
-                  <Icon name='email' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
-                      <TextInput 
-                          ref={(email) => { this.email = email; }}
-                          style={styles.textinput} 
-                          mode='outlined' 
-                          placeholder="Email Address" 
-                          onSubmitEditing={() => { this.securitypin.focus(); }}
-                          onChangeText={val => this.onChangeText('email', val)}>
-                          <Text>{this.state.email}</Text>
-                      </TextInput>
-              </View>
-              <Text style={{ fontSize: 10, marginStart: 0, marginEnd: -70, marginBottom: 10 }}>*Greater than 8 Characters, Must include @ and .com</Text>
+            <View style={[ styles.input, this.state.phonenumber.length > 8 && this.state.phonenumber.length < 13 && !isNaN(phonenumber) && this.state.phonenumber.substr(0,1) != '8' ? styles.noterror : styles.error ]}>
+                    <Icon name='phone' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
+                        <TextInput 
+                            ref={(phonenumber) => { this.phonenumber = phonenumber; }}
+                            style={styles.textinput} 
+                            mode='outlined' 
+                            placeholder="Phone number" 
+                            onSubmitEditing={() => { this.email.focus(); }}
+                            onChangeText={val => this.onChangeText('phonenumber', val)}>
+                            <Text>{this.state.phonenumber}</Text>
+                        </TextInput>
+            </View>
+            <Text style={{ fontSize: 10, marginStart: 10, marginEnd: -60, marginBottom: 10 }}>*Between 8-13 digits, Start with 0 {"&"} Must be a Number</Text>
 
-              <View style={[ styles.input, this.state.securitypin.length >= 4 && this.state.securitypin.length <= 4 && !isNaN(securitypin) ? styles.noterror : styles.error ]}>
-                  <Icon name='onepassword' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
-                  <TextInput 
-                      ref={(securitypin) => { this.securitypin = securitypin; }}
-                      keyboardType='numeric' 
-                      style={styles.textinput} 
-                      mode='outlined' 
-                      placeholder="Security Pin" 
-                      secureTextEntry={true} 
-                      onChangeText={val => this.onChangeText('securitypin', val)}>
-                      <Text>{this.state.securitypin}</Text>
-                  </TextInput>
-              </View>
-              <Text style={{ fontSize: 10, marginStart: 104, marginEnd: -60, marginBottom: 0 }}>*Max 4 digits, Must be a Number</Text>
+            <View style={[ styles.input, this.state.email.length > 8 && this.state.email.includes('@') && this.state.email.includes('.com') ? styles.noterror : styles.error ]}>
+                <Icon name='email' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
+                    <TextInput 
+                        ref={(email) => { this.email = email; }}
+                        style={styles.textinput} 
+                        mode='outlined' 
+                        placeholder="Email Address" 
+                        onSubmitEditing={() => { this.securitypin.focus(); }}
+                        onChangeText={val => this.onChangeText('email', val)}>
+                        <Text>{this.state.email}</Text>
+                    </TextInput>
+            </View>
+            <Text style={{ fontSize: 10, marginStart: 0, marginEnd: -70, marginBottom: 10 }}>*Greater than 8 Characters, Must include @ and .com</Text>
+
+            <View style={[ styles.input, this.state.securitypin.length >= 4 && this.state.securitypin.length <= 4 && !isNaN(securitypin) ? styles.noterror : styles.error ]}>
+                <Icon name='onepassword' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
+                <TextInput 
+                    ref={(securitypin) => { this.securitypin = securitypin; }}
+                    keyboardType='numeric' 
+                    style={styles.textinput} 
+                    mode='outlined' 
+                    placeholder="Security Pin" 
+                    secureTextEntry={true} 
+                    onChangeText={val => this.onChangeText('securitypin', val)}>
+                    <Text>{this.state.securitypin}</Text>
+                </TextInput>
+            </View>
+
+            <Text style={{ fontSize: 10, marginStart: 104, marginEnd: -60, marginBottom: 0 }}>*Max 4 digits, Must be a Number</Text>
             
-              <View style={{alignItems:'center', marginTop: 46}}>
-                  <TouchableRipple
-                      disabled={ this.state.name == '' && this.state.phonenumber == '' && this.state.email == '' && this.state.securitypin == '' && this.state.phonenumber.substr(0,1) != '8' }
-                      onPress={() => this.props.navigation.navigate('SignIn')}
-                      style={[
-                          styles.styleButtonSignUp,
-                          { 
-                              backgroundColor: this.state.name != '' && this.state.phonenumber != '' && this.state.email != '' && this.state.securitypin != '' && this.state.phonenumber.substr(0,1) != '8' ? '#4263D5' : '#4263D550'
-                          }
-                      ]}>
-                      <Text style={{ textAlign: 'center', fontSize: 20, lineHeight: 43, color: '#ffffff', fontSize: 18 }}>Sign Up</Text>
-                   </TouchableRipple>
-              </View>
+            <View style={{alignItems:'center', marginTop: 46}}>
+                <TouchableRipple
+                    disabled={ this.state.name == '' && this.state.phonenumber == '' && this.state.email == '' && this.state.securitypin == '' && this.state.phonenumber.substr(0,1) != '8' }
+                    onPress={this.onSubmit.bind(this)}
+                    style={[
+                        styles.styleButtonSignUp,
+                        {
+                            backgroundColor: this.state.name != '' && this.state.phonenumber != '' && this.state.email != '' && this.state.securitypin != '' && this.state.phonenumber.substr(0,1) != '8' ? '#4263D5' : '#4263D550'
+                        }
+                    ]}>
+                    <Text style={{ textAlign: 'center', fontSize: 20, lineHeight: 43, color: '#ffffff', fontSize: 18 }}>Sign Up</Text>
+                </TouchableRipple>
+            </View>
 
-              <View style={{alignItems:'center', flexDirection: 'row', marginTop: 0, marginBottom: 30 }}>
-                  <Text style={{textAlign:'center', paddingTop:20, fontSize: 14}}>Already have an account?</Text>
-                  <TouchableOpacity
-                      style={{ paddingTop: 20, paddingStart: 10,  }}
-                      onPress={() => this.props.navigation.navigate('SignIn')}>
-                      <Text style={{ color: '#4287f5', fontSize: 14, fontWeight: 'bold' }}>Sign In</Text>
-                  </TouchableOpacity>
-              </View>
-          </View>
-      </View>
+            <View style={{alignItems:'center', flexDirection: 'row', marginTop: 0, marginBottom: 30 }}>
+                <Text style={{textAlign:'center', paddingTop:20, fontSize: 14}}>Already have an account?</Text>
+                <TouchableOpacity
+                    style={{ paddingTop: 20, paddingStart: 10,  }}
+                    onPress={() => this.props.navigation.navigate('SignIn')}>
+                    <Text style={{ color: '#4287f5', fontSize: 14, fontWeight: 'bold' }}>Sign In</Text>
+                </TouchableOpacity>
+            </View>
+        </View>
+    </View>
     );
   }
 }
