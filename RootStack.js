@@ -31,6 +31,8 @@ import SignInMerchant from './Layouts/SignInMerchant'
 import SignUpMerchant from './Layouts/SignUpMerchant'
 import HomeMerchant from './Layouts/HomeMerchant'
 import HistoryMerchant from './Layouts/HistoryMerchant'
+import Withdraw from './Layouts/Withdraw'
+import SecurityWithdraw from './Layouts/SecurityWithdraw'
   
   const Stack = createStackNavigator();
   export default function RootStack() {
@@ -121,6 +123,12 @@ import HistoryMerchant from './Layouts/HistoryMerchant'
           <Stack.Screen name="HistoryMerchant"
                         component={HistoryMerchant}
                         options={{ headerShown: true, headerTitleAlign: 'center', title: 'History Merchant', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>
+          <Stack.Screen name="WithdrawMoney"
+                        component={Withdraw}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Withdraw', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>
+          <Stack.Screen name="SecurityWithdraw"
+                        component={SecurityWithdraw}
+                        options={{ headerShown: true, headerTitleAlign: 'center', title: 'Security Pin', headerTransparent: false, headerTitleStyle: { color: 'black' } }}/>
         </Stack.Navigator>
       </NavigationContainer>
     );

@@ -240,8 +240,6 @@ class InputNominal extends Component{
                                 if(!isNaN(nominalAfterPromo)){
                                     this.props.navigation.navigate('SecurityPINScreen', {
                                         merchant_id : this.props.route.params.merchant_id,
-                                        merchant_id_gajek : this.props.route.params.merchant_id_gajek,
-                                        merchant_clover_account : this.props.route.params.merchant_clover_account,
                                         nominalBeforePromo : nominal,
                                         nominal : nominalAfterPromo,
                                         mycard_number : mycard_number,
@@ -253,8 +251,6 @@ class InputNominal extends Component{
                                 } else if (isNaN(nominalAfterPromo)){
                                     this.props.navigation.navigate('SecurityPINScreen', {
                                         merchant_id : this.props.route.params.merchant_id,
-                                        merchant_id_gajek : this.props.route.params.merchant_id_gajek,
-                                        merchant_clover_account : this.props.route.params.merchant_clover_account,
                                         nominalBeforePromo : nominal,
                                         nominal : nominal,
                                         mycard_number : mycard_number,

@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 
 import * as Font from 'expo-font';
 
-import ProfilePicture from '../assets/aelwen1.jpg';
+import ProfilePicture from '../assets/profile_icon.png';
 import MyImage from '../assets/card_empty.png';
 
 import MyImage1 from '../assets/zero_card.png';

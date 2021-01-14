@@ -57,6 +57,7 @@ export default class HistoryMerchant extends Component{
                                     />
                                 </View>
                                 <Text style={ styles.styleText2 }>From: {`${item.payment_sender}`}</Text>
+                                <Text style={ styles.styleText2 }>To: {`${item.payment_receiver}`}</Text>
                                 <Text style={ styles.styleTime }>Payment Via: {`${item.payment_method}`}</Text>
                                 <Text style={ styles.styleTime }>Payment Promo: {`${item.payment_promo}`}</Text>
                             </View>

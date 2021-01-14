@@ -3,7 +3,7 @@ import { View, Text, ImageBackground, StyleSheet, Icon, Image, AsyncStorage } fr
 import { Button, Content, Header } from 'native-base';
 import { Avatar, TouchableRipple } from 'react-native-paper';
 
-import ProfilePicture from '../assets/aelwen1.jpg'
+import ProfilePicture from '../assets/profile_icon.png'
 import profile_background from '../assets/background_profile.png';
 
 import icon_edit_profile from '../assets/icon_edit_profile.png';

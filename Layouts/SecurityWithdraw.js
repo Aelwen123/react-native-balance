@@ -10,17 +10,12 @@ import { TouchableRipple } from 'react-native-paper';
 
 import { useNavigation } from '@react-navigation/native';
 
-export default class Security extends Component{
+export default class SecurityWithdraw extends Component{
     state = {
-        securitypin: '', currentDate: '', error:''
+        securitypin: '', currentDate: ''
     }
     onChangeText = (key, val) => {
         this.setState({ [key]: val })
-    }
-
-    componentDidMount(){
-        this.currentDate()
-        return false;
     }
 
     onClear = () => {
@@ -28,75 +23,98 @@ export default class Security extends Component{
             securitypin: ''
         })
     }
-
-
     currentDate = () => {
         var date = new Date().getDate();
         var month = new Date().getMonth() + 1;
         var year = new Date().getFullYear();
 
-        this.setState({currentDate : date + '/' + month + '/' + year})
+        this.setState({currentDate : date + '/' + month + '/' + year}, () => console.log(this.state.currentDate))
     }
 
-    pay = () => {
-        if(this.props.route.params.mycard_type == "digitalpayment"){
-            fetch('http://192.168.100.136:3002/payment/payToMerchants', {
-                method: 'POST',
-                headers: {
-                    'Accept' : 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    merchant_id_balance : this.props.route.params.merchant_id,
-                    user_phonenumber : this.props.route.params.mycard_number,
-                    securitypin : this.state.securitypin,
-                    payment_method : this.props.route.params.mycard_name,
-                    amountBeforePromo : this.props.route.params.nominalBeforePromo,
-                    amountAfterPromo: this.props.route.params.nominal,
-                    payment_date: this.state.currentDate,
-                    payment_status: true,
-                    payment_promo : this.props.route.params.payment_promo
+    componentDidMount(){
+        this.currentDate()
+    }
+
+    checkPin = () => {
+        const {securitypin} = this.state
+        fetch("http://192.168.100.136:3002/merchant/checkPin/" + this.props.route.params.merchant_id_balance)
+        .then(response => response.json())
+        .then(res => {
+            if(res.status == 200){
+                this.withdraw
+            } else {
+                Alert.alert(
+                    "Withdraw Failed!"
+                )
+            }
+        })
+    }
+
+    withdraw = () => {
+        if(this.props.route.params.payment_type == "bank"){
+            if(this.props.route.params.payment_method == 'clover'){
+                fetch('http://192.168.100.136:3002/payment/withdraw/clover', {
+                    method: 'post',
+                    headers: {
+                        'Accept' : 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        accountnumber : this.props.route.params.accountnumber,
+                        amount : this.props.route.params.nominal,
+                        currentdate : this.state.currentDate,
+                        merchant_id_balance: this.props.route.params.merchant_id_balance
+                    })
                 })
-            }).then(response => response.json())
-            .then(res => {
-                if(res.status == 200){
-                    this.props.navigation.push('TheHome')
-                }
-                else{
-                    this.setState({error: "Payment Failed!"})
-                }
-            })
+                .then(response => response.json())
+                .then(res => {
+                    if(res.status == 200){
+                        Alert.alert(
+                            "Withdraw Success!"
+                        )
+                        this.props.navigation.push('HomeMerchant', {
+                            merchant_id : this.props.route.params.merchant_id_balance
+                        })
+                    }
+                    else{
+                        Alert.alert(
+                            "Withdraw Failed!"
+                        )
+                    }
+                })
+            }
         } else {
-            fetch('http://192.168.100.136:3002/payment/payToBanks', {
-                method: 'POST',
-                headers: {
-                    'Accept' : 'application/json',
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    merchant_id_balance : this.props.route.params.merchant_id,
-                    user_phonenumber : this.props.route.params.mycard_phonenumber,
-                    senderAccountNumber : this.props.route.params.mycard_number,
-                    debitcardpin : this.state.securitypin,
-                    payment_method : this.props.route.params.mycard_name,
-                    amountBeforePromo : this.props.route.params.nominalBeforePromo,
-                    amountAfterPromo: this.props.route.params.nominal,
-                    payment_date: this.state.currentDate,
-                    payment_status: true,
-                    payment_promo : this.props.route.params.payment_promo
+            if(this.props.route.params.payment_method == 'gajek'){
+                fetch('http://192.168.100.136:3002/payment/withdraw/gajek', {
+                    method: 'post',
+                    headers: {
+                        'Accept' : 'application/json',
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({
+                        accountnumber : this.props.route.params.accountnumber,
+                        amount : this.props.route.params.nominal,
+                        currentdate : this.state.currentDate,
+                        merchant_id_balance: this.props.route.params.merchant_id_balance
+                    })
                 })
-            }).then(response => response.json())
-            .then(res => {
-                if(res.status == 200){
-                    Alert.alert(
-                        "Payment Success!"
-                    )
-                    this.props.navigation.push('TheHome')
-                }
-                else{
-                    this.setState({error: "Payment Failed!"})
-                }
-            })
+                .then(response => response.json())
+                .then(res => {
+                    if(res.status == 200){
+                        Alert.alert(
+                            "Withdraw Success!"
+                        )
+                        this.props.navigation.push('HomeMerchant', {
+                            merchant_id : this.props.route.params.merchant_id_balance
+                        })
+                    }
+                    else{
+                        Alert.alert(
+                            "Withdraw Failed!"
+                        )
+                    }
+                })
+            }
         }
     }
 
@@ -127,11 +145,8 @@ export default class Security extends Component{
                             </TextInput>
                         </View>
                     </View>
-                    <View style={{marginTop: 35}}>
+                    <View style={{ position: 'relative', top: 40, marginStart: 24, }}>
                         <Text style={{ fontSize: 12, textAlign: 'right', marginEnd: 26, }}>*Must be a Number!</Text>
-                    </View>
-                    <View style={{marginTop: 10}}>
-                        <Text style={{ fontSize: 12, textAlign: 'right', marginEnd: 26, color: 'red'}}>{this.state.error}</Text>
                     </View>
                     <View style={{ justifyContent: 'flex-end', flex: 1, marginBottom: 54, marginEnd: 0 }}>
                         <View style={{ alignItems:'center', marginTop: 20, }}>
@@ -139,7 +154,7 @@ export default class Security extends Component{
                             <TouchableOpacity 
                                 name={ this.state.btnPay } 
                                 disabled={ !enabled }
-                                onPress={this.pay.bind(this)}
+                                onPress={this.withdraw.bind(this)}
                                 style={[
                                     styles.containerButtonPay,
                                     { 

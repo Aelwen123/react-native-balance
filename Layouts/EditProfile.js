@@ -6,7 +6,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import { TextInput } from 'react-native-gesture-handler';
 
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import ProfilePicture from '../assets/aelwen1.jpg';
+import ProfilePicture from '../assets/profile_icon.png';
 import pencil from '../assets/pencil.png';
 
 class Edits extends Component{
@@ -107,7 +107,7 @@ const styles = StyleSheet.create({
         marginBottom: 25,
         // marginStart: 120,
         marginTop: 25,
-        alignSelf:'center'
+        alignSelf:'center',
     },
     styleContainerUpdate: {
         justifyContent: 'center', 

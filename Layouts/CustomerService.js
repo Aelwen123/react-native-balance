@@ -47,7 +47,7 @@ class CustomerService extends Component{
 
     render(){
         const { email, kindComplaint, feedBack } = this.state;
-        const enabled = email.length > 8 && !email.includes('@') && !email.includes('.com') || kindComplaint.length > 5 && kindComplaint.length < 20 && feedBack.length > 5 && feedBack.length < 80;
+        const enabled = email.length > 8 && !email.includes('@') && !email.includes('.com') || kindComplaint.length > 5 && kindComplaint.length < 50 && feedBack.length > 5 && feedBack.length < 1200;
 
         return(
             <View style={ styles.container }>
@@ -63,7 +63,7 @@ class CustomerService extends Component{
                     <View style={{ flexDirection: 'row', marginStart: -66, marginEnd: -66, }}>
                         <Icon name='email' size={30} color="#4287f5" style={{ alignItems:'center', justifyContent:'center', paddingTop: 6, paddingStart: 6, marginTop: 16 }}/>
                             <View style={styles.input}>
-                                <TextInput style={styles.textinput} mode='outlined' placeholder="Email Address" onChangeText={val => this.onChangeText('email', val)}>
+                                <TextInput editable={false} style={styles.textinput} mode='outlined' placeholder="Email Address" onChangeText={val => this.onChangeText('email', val)}>
                                     <Text>{this.state.email}</Text>
                                 </TextInput>
                             </View>
@@ -73,7 +73,7 @@ class CustomerService extends Component{
                     <View style={{ flexDirection: 'row', marginStart: -66, marginEnd: -66, }}>
                         <Icon name='comment-text' size={30} color="#4287f5" style={{ alignItems:'center', paddingTop: 6, paddingStart: 6, marginTop: 16 }}/>
                             <View style={styles.input}>
-                                <TextInput style={styles.textinput} mode='outlined' placeholder="Kind of Complaint" onChangeText={val => this.onChangeText('kindComplaint', val)}>
+                                <TextInput style={styles.textinput} mode='outlined' placeholder="Subject Complaint" onChangeText={val => this.onChangeText('kindComplaint', val)}>
                                     <Text style={{ marginEnd: 20, overflow: 'hidden', padding: 12 }}>{this.state.kindComplaint}</Text>
                                 </TextInput>
                             </View>

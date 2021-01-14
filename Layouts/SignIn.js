@@ -11,8 +11,8 @@ var lg = require("../img/Logo_Balance.png");
 
 export default class SignIn extends React.Component{
         state = {
-            phonenumber: '', 
-            securitypin: '',
+            phonenumber: '085347622944', 
+            securitypin: '2580',
         }
         
         onChangeText = (key, val) => {
@@ -54,7 +54,6 @@ export default class SignIn extends React.Component{
                 console.log(err)
             })
         }
-
         
         render(){            
             const { phonenumber, securitypin, submitButton } = this.state;

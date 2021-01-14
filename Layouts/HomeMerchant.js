@@ -9,7 +9,7 @@ import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import Icons from 'react-native-vector-icons/AntDesign';
 import * as Font from 'expo-font';
 
-import ProfilePicture from '../assets/aelwen1.jpg';
+import ProfilePicture from '../assets/profile_icon.png';
 import MyImage from '../assets/card_empty.png';
 
 import MyImage1 from '../assets/zero_card.png';
@@ -35,9 +35,8 @@ class HomeMerchant extends Component{
         this.state = {
             merchant_id_balance :  '',
             merchant_name: '',
-            merchant_gajek : '',
-            merchant_clover : '',
             merchant_phonenumber: '',
+            merchant_balance:'',
             merchant_type : '',
             merchant_location : '',
             merchant_email : '',
@@ -52,7 +51,6 @@ class HomeMerchant extends Component{
     componentDidMount(){
         this.getMerchantData();
         this.getMerchantHistory();
-        this.getMerchantWallet();
     }
 
     getMerchantData = () => {
@@ -61,8 +59,6 @@ class HomeMerchant extends Component{
             .then(response => response.json())
             .then(res => {
                 this.setState({merchant_id_balance: res._id})
-                this.setState({merchant_gajek: res.merchant_id_gajek})
-                this.setState({merchant_clover: res.merchant_clover_account})
                 this.setState({merchant_name : res.merchant_name})
                 this.setState({merchant_type: res.merchant_type})
                 this.setState({merchant_location: res.merchant_location})
@@ -70,50 +66,10 @@ class HomeMerchant extends Component{
                 this.setState({merchant_email : res.merchant_email})
                 this.setState({merchant_workhour_finish : res.merchant_workhour_finish})
                 this.setState({merchant_workhour_start: res.merchant_workhour_start})
+                this.setState({merchant_balance : res.merchant_balance})
             })
         })
     }
-
-    getMerchantWallet = () => {
-        AsyncStorage.getItem('merchant_phonenumber', (err, result) => {
-            fetch("http://192.168.100.136:3002/mycard/merchantCard/digitalpayment", {
-                method: 'POST',
-                headers: {
-                  'Accept' : 'application/json',
-                  'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                  digitalpaymentname : "gajek",
-                  number : result
-                })
-            })
-            .then(response => response.json())
-            .then(res => {
-                this.setState(prevState => ({
-                  merchantCardDigital : [res, ...prevState.merchantCardDigital]
-                }))
-            })
-        })
-
-        fetch("http://192.168.100.136:3002/mycard/merchantCard/bank", {
-            method: 'POST',
-            headers: {
-              'Accept' : 'application/json',
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              bankname : "clover",
-              number : this.props.route.params.merchant_clover_account
-            })
-        })
-        .then(response => response.json())
-        .then(res => {
-            this.setState(prevState => ({
-              merchantCardBank : [res, ...prevState.merchantCardBank]
-            }))
-        })
-    }
-
 
     getMerchantHistory = () => {
         fetch("http://192.168.100.136:3002/payment/merchant/" + this.props.route.params.merchant_id)
@@ -125,14 +81,14 @@ class HomeMerchant extends Component{
 
     render(){
         return(
-            <ScrollView stickyHeaderIndices={[3]} style={ styles.container }>
+            <View style={ styles.container }>
                 <ImageBackground source={bg} style={ styles.imgb }>
                     <Content>
                         <View style={{ justifyContent: 'flex-start', alignItems: 'flex-start', flexDirection: 'row' }}>
                             <Image source={lg} style={ styles.imglogo }/>
                             <View style={{ marginTop: 54, marginStart: 198, marginEnd: 40}}>
                             <TouchableOpacity
-                                onPress={() => this.props.navigation.navigate('TheHome', {
+                                onPress={() => this.props.navigation.push('TheHome', {
                                     merchant_phonenumber: this.state.merchant_phonenumber
                                 })}>
                                 <Icons name="leftsquare" size={30} style={{ color: colors.white }}/>           
@@ -149,70 +105,26 @@ class HomeMerchant extends Component{
                         </View>
                         
                         <View style={ styles.main }>
-                        <FlatList data={this.state.merchantCardBank}
-                            horizontal={true}
-                            showsHorizontalScrollIndicator={false}
-                            keyExtractor={(y, i) => i.toString()}
-                            style={{height:220}}
-                            renderItem={({item}) =>
-                              <TouchableOpacity activeOpacity={0.95} style={{backgroundColor:'#ffffff0', borderRadius:20, marginStart: 8, }}>
-                                <View style={styles.card}>
-                                  <View style={styles.cardImage}>
-                                    <Image source={`${item.mycard_type}` == "digitalpayment" ? MyImage1 : MyImage2} style={{ marginTop: 4, width: '86%', height: '78%', resizeMode: 'stretch' }}/>
-                                      <View style={{position:'absolute', paddingTop:10}}>
-                                        <View style={{flexDirection:'row'}}>
-                                          <View>
-                                            <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:16, textAlign: 'left', alignContent: 'center', marginStart: 30, marginTop: 60, letterSpacing: 1.2, textTransform:'uppercase' }}>clover</Text>
-                                            <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:16, textAlign: 'left', alignContent: 'center', marginStart: 30, letterSpacing: 1.2 }}>{`${item.accountnumber}`.toUpperCase()}</Text>
-                                          </View>
-                                        </View>
-                                      
-                                          <View style={{ flexDirection: 'row'}}>
-                                            <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:18, textAlign: 'left', alignContent: 'center', marginStart: 30, marginTop: 20, }}>IDR </Text>
-                                            <CurrencyInput 
-                                                mode='outlined' 
-                                                placeholder="Input Nominal" 
-                                                style={{ color:'#466FFF', fontWeight:'bold', fontSize:30, textAlign: 'left', alignContent: 'center', marginStart: 5, marginTop: 16, letterSpacing: 1}} 
-                                                value={`${item.balance}`}
-                                                delimiter=","
-                                                separator="."
-                                                precision={0}
-                                                keyboardType={'decimal-pad'}
-                                                editable={false}
-                                            />
-                                          </View>
-                                        </View>
-                                      </View>
-                                  </View>
-                              </TouchableOpacity>
-                            }
-                        />
-
-                        <FlatList data={this.state.merchantCardDigital}
-                            horizontal={true}
-                            keyExtractor={(y, i) => i.toString()}
-                            style={{height:220}}
-                            showsHorizontalScrollIndicator={false}
-                            renderItem={({item}) =>
-                              <TouchableOpacity activeOpacity={0.95} style={{backgroundColor:'#ffffff0', borderRadius:20, marginStart: 8, }}>
+                        <TouchableOpacity activeOpacity={0.95} style={{backgroundColor:'#ffffff0', borderRadius:20, marginStart: 8, marginBottom: 20}} onPress={() => this.props.navigation.push('WithdrawMoney', {
+                          merchant_id_balance: this.state.merchant_id_balance
+                        })}>
                                 <View style={styles.card}>
                                   <View style={styles.cardImage}>
                                     <Image source={MyImage1} style={{ marginTop: 4, width: '86%', height: '78%', resizeMode: 'stretch' }}/>
                                       <View style={{position:'absolute', paddingTop:10}}>
                                         <View style={{flexDirection:'row'}}>
                                           <View>
-                                            <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:16, textAlign: 'left', alignContent: 'center', marginStart: 30, marginTop: 60, letterSpacing: 1.2, textTransform:'uppercase' }}>gajek</Text>
-                                            <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:16, textAlign: 'left', alignContent: 'center', marginStart: 30, letterSpacing: 1.2 }}>{`${item.merchant_phonenumber}`.toUpperCase()}</Text>
+                                            <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:16, textAlign: 'left', alignContent: 'center', marginStart: 30, marginTop: 60, letterSpacing: 1.2, textTransform:'uppercase' }}>{this.state.merchant_name}</Text>
+                                            <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:16, textAlign: 'left', alignContent: 'center', marginStart: 30, letterSpacing: 1.2 }}>{this.state.merchant_phonenumber}</Text>
                                           </View>
                                         </View>
                                       
                                           <View style={{ flexDirection: 'row'}}>
                                             <Text style={{color:'#466FFF', fontWeight:'bold', fontSize:18, textAlign: 'left', alignContent: 'center', marginStart: 30, marginTop: 20, }}>IDR </Text>
                                             <CurrencyInput 
-                                                mode='outlined' 
-                                                placeholder="Input Nominal" 
+                                                mode='outlined'
                                                 style={{ color:'#466FFF', fontWeight:'bold', fontSize:30, textAlign: 'left', alignContent: 'center', marginStart: 5, marginTop: 16, letterSpacing: 1}} 
-                                                value={`${item.merchant_balance}`}
+                                                value={this.state.merchant_balance}
                                                 delimiter=","
                                                 separator="."
                                                 precision={0}
@@ -224,13 +136,12 @@ class HomeMerchant extends Component{
                                       </View>
                                   </View>
                               </TouchableOpacity>
-                            }
-                        />
-                            <Text style={{color:'white', fontSize:16, fontWeight:'bold', marginStart: 10, marginBottom:10}}>Transaction History</Text>
+                        
+                            <Text style={{color:'white', fontSize:16, fontWeight:'bold', marginStart: 10, marginBottom:10, marginTop: 80}}>Transaction History</Text>
                             <FlatList data={this.state.history}
                                 horizontal={true}
                                 keyExtractor={(y, i) => i.toString()}
-                                style={{height:170, backgroundColor:'rgba(255,255,255,0.3)', borderRadius:20}}
+                                style={{backgroundColor:'rgba(255,255,255,0.3)', borderRadius:20}}
                                 renderItem={({item}) =>
                                     <View style={ styles.content }>
                                         <TouchableOpacity style={ styles.containerText } onPress={() => this.props.navigation.navigate('HistoryMerchant', {
@@ -258,7 +169,7 @@ class HomeMerchant extends Component{
                         </View>
                     </Content>
                 </ImageBackground>
-            </ScrollView>
+            </View>
         );
     }
 }

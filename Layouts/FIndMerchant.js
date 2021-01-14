@@ -24,24 +24,41 @@ export default class FindMerchant extends Component{
 
     onSearch = async() => {
         const { merchantName } = this.state
-        fetch('http://192.168.100.136:3002/merchant/getMerchant/name/' + merchantName)
-        .then(response => response.json())
-        .then(res => {
-            if(res.status == 401){
-                this.setState({errormessage : "Merchant not found!"})
-            } else {
-                this.setState({merchantData : res})
-                this.setState({viewMerchantData: true})
-                this.setState({errormessage : ''})
-            }
-        }).catch(err => {
-            console.log(err)
-        })
+
+        if( merchantName === ''){
+            fetch('http://192.168.100.136:3002/merchant')
+            .then(response => response.json())
+            .then(res => {
+                if(res.status == 401){
+                    this.setState({errormessage : "Merchant not found!"})
+                } else {
+                    this.setState({merchantData : res})
+                    this.setState({viewMerchantData: true})
+                    this.setState({errormessage : ''})
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+        }else {
+            fetch('http://192.168.100.136:3002/merchant/getMerchant/name/' + merchantName)
+            .then(response => response.json())
+            .then(res => {
+                if(res.status == 401){
+                    this.setState({errormessage : "Merchant not found!"})
+                } else {
+                    this.setState({merchantData : res})
+                    this.setState({viewMerchantData: true})
+                    this.setState({errormessage : ''})
+                }
+            }).catch(err => {
+                console.log(err)
+            })
+        }
     }
 
     render(){
         const { merchantName } = this.state;
-        const enabled = merchantName.length > 2 && merchantName.length < 20;
+        const enabled = merchantName.length >= 0 && merchantName.length < 20;
 
         return(
             <View style={styles.container}>
@@ -71,7 +88,7 @@ export default class FindMerchant extends Component{
                         renderItem={({item}) =>
                             <TouchableOpacity style={styles.viewMerchant} onPress = {() => this.props.navigation.navigate('SelectMerchantLocationScreen', {merchant_name : `${item.merchant_name}`})}>
                                 <Text style={{fontSize: 20, textTransform: 'uppercase', fontWeight:'bold'}}>{`${item.merchant_name}`}</Text>
-                                <Text>{`${item.merchant_type}`}</Text>
+                                <Text style={{textTransform:'uppercase'}}>{`${item.merchant_type}`}</Text>
                                 <Text>{`${item.merchant_location}`}</Text>
                                 <Text>Check out {`${item.merchant_name}`} other branch</Text>
                             </TouchableOpacity>

@@ -11,17 +11,18 @@ var bg = require("../img/background.png");
 
 class SignUpMerchant extends Component{
     state = {
-        merchant_clover_account: '50383682',
-        merchant_type: 'medical', 
-        merchant_location: 'Jakarta Barat', 
-        merchant_phonenumber: '082212345', 
+        merchant_name: '',
+        merchant_type: '', 
+        merchant_location: '', 
+        merchant_phonenumber: '', 
+        merchant_email: '',
         merchant_workhour_finish: '',
         merchant_workhour_finish1: '',
         merchant_workhour_finish2: '',
         merchant_workhour_start: '',
         merchant_workhour_start1: '',
         merchant_workhour_start2: '',
-        merchant_pin:'2580',
+        merchant_pin:'',
         isModalTimeStartVisible : false,
         isModalTimeFinishVisible : false,
     }
@@ -30,8 +31,7 @@ class SignUpMerchant extends Component{
     }
 
     onSubmit = () => {
-        const { merchant_clover_account, merchant_type, merchant_location, merchant_phonenumber, merchant_workhour_finish, merchant_workhour_start, merchant_pin } = this.state;
-        console.log(merchant_clover_account, merchant_location, merchant_type, merchant_phonenumber, merchant_workhour_finish, merchant_workhour_start)
+        const { merchant_email, merchant_name, merchant_type, merchant_location, merchant_phonenumber, merchant_workhour_finish, merchant_workhour_start, merchant_pin } = this.state;
         fetch('http://192.168.100.136:3002/merchant/addMerchant', {
             method:'post',
             headers: {
@@ -39,10 +39,11 @@ class SignUpMerchant extends Component{
                 'Content-Type': 'application/json'
             },
             body: JSON.stringify({
-                merchant_clover_account : merchant_clover_account,
+                merchant_name : merchant_name,
                 merchant_type : merchant_type,
                 merchant_location : merchant_location,
                 merchant_phonenumber : merchant_phonenumber,
+                merchant_email : merchant_email,
                 merchant_workhour_start : merchant_workhour_start,
                 merchant_workhour_finish : merchant_workhour_finish,
                 merchant_pin : merchant_pin
@@ -100,20 +101,28 @@ class SignUpMerchant extends Component{
                         <Text style={{marginLeft: 10, fontWeight:'bold'}}>*Make sure its avaiable!</Text>
                     </View>
 
-                    <View style={{flexDirection:'column', height: 95}}>
-                        <View style={[styles.input, this.state.merchant_clover_account != '' ? styles.noterror : styles.error]}>
-                            <Icon name='bank' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
-                            <TextInput
-                                editable={true}
-                                keyboardType='number-pad' 
-                                style={styles.textinput} 
-                                mode='outlined' 
-                                placeholder="Merchant Clover Account"
-                                onChangeText={val => this.onChangeText('merchant_clover_account', val)}>
-                                <Text style={{textTransform: 'uppercase'}}>{this.state.merchant_clover_account}</Text>
-                            </TextInput>
-                        </View>
-                        <Text style={{marginLeft: 10, fontWeight:'bold'}}>*Make sure its avaiable!</Text>
+                    <View style={[styles.input, this.state.merchant_name != '' ? styles.noterror : styles.error]}>
+                        <Icon name='bank' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
+                        <TextInput
+                            editable={true}
+                            style={styles.textinput} 
+                            mode='outlined' 
+                            placeholder="Merchant Name"
+                            onChangeText={val => this.onChangeText('merchant_name', val)}>
+                            <Text>{this.state.merchant_name}</Text>
+                        </TextInput>
+                    </View>
+
+                    <View style={[styles.input, this.state.merchant_name != '' ? styles.noterror : styles.error]}>
+                        <Icon name='email' size={30} color="#4287f5" style={{alignItems:'center', justifyContent:'center', padding:12}}/>
+                        <TextInput
+                            editable={true}
+                            style={styles.textinput} 
+                            mode='outlined' 
+                            placeholder="Merchant Email"
+                            onChangeText={val => this.onChangeText('merchant_email', val)}>
+                            <Text>{this.state.merchant_email}</Text>
+                        </TextInput>
                     </View>
                     
 
@@ -232,7 +241,7 @@ class SignUpMerchant extends Component{
                         </TextInput>
                     </View>
 
-                    <View style={{alignItems:'center', marginTop: 35}}>
+                    <View style={{alignItems:'center', marginTop: 15}}>
                         <TouchableRipple
                             disabled={ this.state.merchant_clover_account == '' && this.state.merchant_location == '' && this.state.merchant_phonenumber == '' && this.state.merchant_pin.length != 4 && !enable }
                             onPress={this.onSubmit.bind(this)}
@@ -245,10 +254,10 @@ class SignUpMerchant extends Component{
                             <Text style={{ textAlign: 'center', fontSize: 20, lineHeight: 43, color: '#ffffff', fontSize: 18 }}>Sign Up Merchant</Text>
                         </TouchableRipple>
                     </View>
-                    <View style={{alignItems:'center', flexDirection: 'row', marginTop: 0, marginBottom: 30 }}>
-                        <Text style={{textAlign:'center', paddingTop:20, fontSize: 14}}>Already have an account?</Text>
+                    <View style={{alignItems:'center', flexDirection: 'row', marginTop: 0, marginBottom: 0 }}>
+                        <Text style={{textAlign:'center', paddingTop:10, fontSize: 14}}>Already have an account?</Text>
                         <TouchableOpacity
-                            style={{ paddingTop: 20, paddingStart: 10,  }}
+                            style={{ paddingTop: 10, paddingStart: 10,  }}
                             onPress={() => this.props.navigation.navigate('SignInMerchant')}>
                             <Text style={{ color: 'white', fontSize: 14, fontWeight: 'bold' }}>Sign In Merchant</Text>
                         </TouchableOpacity>
@@ -284,7 +293,7 @@ const styles = StyleSheet.create({
         justifyContent:'center',
         alignItems:'center',
         position:'absolute',
-        top:40,
+        top:30,
         left:95
     },
     image:{

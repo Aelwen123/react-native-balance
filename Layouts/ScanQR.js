@@ -23,7 +23,7 @@ export default function App() {
 
   const handleBarCodeScanned = ({ type, data }) => {
     setScanned(true);
-    fetch('http://192.168.100.136:3002/merchant/getMerchant/gajek/' + `${data}`)
+    fetch('http://192.168.100.218:3002/merchant/getMerchant/gajek/' + `${data}`)
     .then(response => response.json())
     .then(res => {
       if(res.status == 401){
